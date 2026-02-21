@@ -1,0 +1,89 @@
+.tag {
+    border-radius: 100px;
+    padding-left: 6px;
+    padding-right: 12px;
+    height: 24px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap;
+    border: 1px solid transparent; // standard fallback
+}
+
+.circle {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 6px;
+    flex-shrink: 0;
+}
+
+// -----------------------------------------
+// Theme Variants mapped to Angular Material Semantic Colors
+// We use rgba backgrounds to create the subtle pastel badge look 
+// native to modern SaaS applications.
+// -----------------------------------------
+
+/* Active (Green) */
+.activeTag {
+    background-color: color-mix(in srgb, var(--success-color, #10B981) 15%, transparent);
+    color: color-mix(in srgb, var(--success-color, #10B981) 90%, black);
+    border-color: color-mix(in srgb, var(--success-color, #10B981) 30%, transparent);
+}
+
+.activeCircle {
+    background-color: var(--success-color, #10B981);
+}
+
+/* Inactive (Red) */
+.inactiveTag {
+    background-color: color-mix(in srgb, var(--warn-color, #EF4444) 15%, transparent);
+    color: color-mix(in srgb, var(--warn-color, #EF4444) 90%, black);
+    border-color: color-mix(in srgb, var(--warn-color, #EF4444) 30%, transparent);
+}
+
+.inactiveCircle {
+    background-color: var(--warn-color, #EF4444);
+}
+
+/* Warning (Orange) */
+.warningTag {
+    background-color: color-mix(in srgb, var(--warning-color, #F59E0B) 15%, transparent);
+    color: color-mix(in srgb, var(--warning-color, #F59E0B) 90%, black);
+    border-color: color-mix(in srgb, var(--warning-color, #F59E0B) 30%, transparent);
+}
+
+.warningCircle {
+    background-color: var(--warning-color, #F59E0B);
+}
+
+/* Pending / Default (Gray) */
+.pendingTag,
+.defaultTag {
+    background-color: color-mix(in srgb, var(--text-secondary, #6B7280) 15%, transparent);
+    color: var(--text-color, #111827);
+    border-color: color-mix(in srgb, var(--border-color, #E5E7EB) 100%, transparent);
+}
+
+.pendingCircle,
+.defaultCircle {
+    background-color: var(--text-secondary, #6B7280);
+}
+
+// Dark mode overrides if needed
+.dark-theme {
+    .activeTag {
+        color: color-mix(in srgb, var(--success-color, #10B981) 80%, white);
+    }
+
+    .inactiveTag {
+        color: color-mix(in srgb, var(--warn-color, #EF4444) 80%, white);
+    }
+
+    .warningTag {
+        color: color-mix(in srgb, var(--warning-color, #F59E0B) 80%, white);
+    }
+}

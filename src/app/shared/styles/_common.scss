@@ -1,0 +1,41 @@
+@mixin page-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 20px;
+    gap: 20px;
+    box-sizing: border-box;
+}
+
+@mixin header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+@mixin grid-container {
+    flex: 1;
+    height: 100%;
+    /* Ensure full height */
+    min-height: 0;
+    /* Allow scrolling inside */
+    display: flex;
+    flex-direction: column;
+}
+
+@mixin loading-container {
+    display: flex;
+    justify-content: center;
+    padding: 50px;
+}
+
+@mixin actions-row {
+    display: flex;
+    gap: 10px;
+}
+
+@mixin host-block {
+    display: block;
+    height: 100%;
+}

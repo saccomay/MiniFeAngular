@@ -1,0 +1,90 @@
+.stats-card {
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 160px;
+    position: relative;
+    overflow: hidden;
+    /* Color is set via inline style: rgb(var(--card-rgb)) */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    }
+}
+
+.dot-pattern {
+    position: absolute;
+    top: 0;
+    left: -20px;
+    width: 240px;
+    height: 240px;
+    z-index: 1;
+    opacity: 0.24;
+    color: currentColor;
+
+    /* SVG Mask Implementation */
+    -webkit-mask: url('/assets/background/shape-square.svg') center center / contain no-repeat;
+    mask: url('/assets/background/shape-square.svg') center center / contain no-repeat;
+    background-color: currentColor;
+    pointer-events: none;
+}
+
+.content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+}
+
+.icon-wrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    /* Use the solid color for icon circle background, or a white/light overlay */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+
+    mat-icon {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+        /* Icon color uses the text color (solid theme color) */
+        color: currentColor;
+    }
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card-count {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+    color: currentColor;
+    /* Matches the solid theme color */
+}
+
+.card-title {
+    font-size: 14px;
+    font-weight: 600;
+    opacity: 0.8;
+    /* Slightly lighter tone */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: currentColor;
+}

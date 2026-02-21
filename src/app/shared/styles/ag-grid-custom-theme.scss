@@ -1,0 +1,107 @@
+// Custom AG Grid Theme adapted from grid-example, integrated with the application's global design tokens
+.custom-grid-theme {
+    --ag-row-height: 46px; // Slightly taller rows for better readability
+
+    @media screen and (max-width: 720px) {
+        --ag-font-size: 12px;
+        --ag-grid-size: 6px;
+    }
+
+    // Adjust viewport to detach rows slightly from the header
+    .ag-body-viewport {
+        padding-top: 8px;
+    }
+
+    .ag-row-group .ag-icon {
+        opacity: 0.5;
+    }
+
+    // Row styling: remove standard borders, add rounded corners
+    .ag-row {
+        border-bottom: none !important;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 4px; // Small gap between rows
+        border: 1px solid transparent; // Reserve space for hover/selection borders
+        transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    // Hover effect over full row
+    .ag-row:hover {
+        border-color: var(--border-color);
+    }
+
+    // Remove border from the root wrapper
+    .ag-root-wrapper {
+        border: none !important;
+    }
+
+    // Inner alignment for expandables
+    .ag-cell-expandable {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    // Flex alignment for standard cells
+    .ag-cell {
+        display: flex;
+        align-items: center;
+        border: none !important; // Prevent cell-level borders from breaking the rounded look
+
+        &:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+
+        &:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+    }
+
+    .ag-right-aligned-cell {
+        justify-content: flex-end;
+    }
+
+    // Header styling: Use secondary background and app borders
+    .ag-header {
+        background-color: var(--bg-color); // App's background color
+        color: var(--text-secondary);
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 8px; // Separate header from body
+    }
+
+    .ag-header-cell-text {
+        color: var(--text-color);
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+    }
+
+    .ag-full-width-container .ag-row,
+    .ag-full-width-container .ag-details-row {
+        background-color: transparent;
+    }
+
+    .ag-details-row {
+        padding: 16px;
+    }
+
+    .ag-paging-panel {
+        height: 48px;
+        border-top: none;
+        color: var(--text-color);
+
+        &>span:last-child {
+            margin-right: 0;
+        }
+    }
+
+    // Overriding focus outlines for a cleaner look
+    .ag-cell-focus {
+        border-color: var(--primary-color) !important;
+        outline: none !important;
+    }
+}

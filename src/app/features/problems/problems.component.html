@@ -1,0 +1,28 @@
+<div class="page-container">
+
+    <app-table-toolbar [tabs]="tabs" [activeTab]="activeTab" [onlyMeActive]="onlyMeActive"
+        [searchText]="quickFilterText" [activeFilterCount]="activeFilterCount" (tabChange)="onTabChange($event)"
+        (onlyMeChange)="onOnlyMeChange($event)" (searchChange)="onSearchChange($event)"
+        (clearFilters)="onClearFilters()">
+        <div toolbar-actions class="actions">
+            <button mat-flat-button color="primary" (click)="reload()">
+                <mat-icon>refresh</mat-icon> Reload
+            </button>
+        </div>
+    </app-table-toolbar>
+
+    <div class="grid-container">
+        @if (problemsService.problemsResource.isLoading()) {
+        <app-skeleton-loading-overlay></app-skeleton-loading-overlay>
+        } @else if (problemsService.problemsResource.error()) {
+        <div class="error-container">
+            Error loading problems.
+            <button mat-button (click)="reload()">Retry</button>
+        </div>
+        } @else {
+        <app-ag-grid-wrapper [rowData]="problemsService.problemsResource.value() || []" [columnDefs]="columnDefs"
+            [quickFilterText]="quickFilterText" (gridReady)="onGridReady($event)">
+        </app-ag-grid-wrapper>
+        }
+    </div>
+</div>

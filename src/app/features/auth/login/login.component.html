@@ -1,0 +1,97 @@
+<div class="main-layout">
+    <!-- Left Panel: Welcome Section -->
+    <div class="section-intro">
+        <h3 class="intro-title">Hi, Welcome back</h3>
+        <p class="intro-description">More effectively with optimized workflows.</p>
+
+        <div class="intro-illustration">
+            <div class="illustration-wrapper">
+                <div class="circle c1"></div>
+                <div class="circle c2"></div>
+                <img src="/assets/images/LeftPanelLogo.png" alt="Login Illustration" class="intro-image">
+            </div>
+        </div>
+
+        <div class="intro-footer">
+            <mat-icon>insert_chart</mat-icon>
+            <mat-icon>pie_chart</mat-icon>
+            <mat-icon>show_chart</mat-icon>
+        </div>
+    </div>
+
+    <!-- Right Panel: Login Form -->
+    <div class="content-form">
+        <div class="login-card-container">
+            <div class="login-header">
+                <h1 class="title">Sign in to your account</h1>
+                <p class="subtitle">
+                    Use your GitHub Enterprise account to access the platform.
+                </p>
+            </div>
+
+            <!-- GitHub Login (Primary) -->
+            <button mat-flat-button class="github-btn full-width" type="button" (click)="onGitHubLogin()">
+                <span class="github-btn-inner">
+                    <svg class="github-icon" viewBox="0 0 24 24" width="20" height="20"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.605 9.605 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.597 1.028 2.688 0 3.848-2.339 4.685-4.566 4.938.359.31.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12c0-5.523-4.477-10-10-10z"
+                            fill="currentColor" />
+                    </svg>
+                    <span>Continue with GitHub</span>
+                </span>
+            </button>
+
+            <div class="divider">
+                <mat-divider></mat-divider>
+                <span>OR</span>
+                <mat-divider></mat-divider>
+            </div>
+
+            <!-- Email / Password Form (secondary) -->
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+                <div class="alert-info">
+                    <mat-icon>info</mat-icon>
+                    <span>Use <strong>demo&#64;minimals.cc</strong> with password <strong>&#64;2Minimal</strong></span>
+                </div>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Email address</mat-label>
+                    <input matInput formControlName="username" placeholder="" type="email">
+                    @if (loginForm.get('username')?.hasError('required')) {
+                    <mat-error>Email is required</mat-error>
+                    }
+                    @if (loginForm.get('username')?.hasError('email')) {
+                    <mat-error>Please enter a valid email address</mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Password</mat-label>
+                    <input matInput formControlName="password" [type]="hidePassword() ? 'password' : 'text'"
+                        placeholder="">
+                    <button mat-icon-button matSuffix (click)="togglePasswordVisibility($event)"
+                        [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword()" type="button">
+                        <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+                    </button>
+                    @if (loginForm.get('password')?.hasError('required')) {
+                    <mat-error>Password is required</mat-error>
+                    }
+                </mat-form-field>
+
+                <div class="password-header">
+                    <a href="javascript:void(0)" (click)="onForgotPassword()" class="forgot-password">Forgot
+                        password?</a>
+                </div>
+
+                <div class="actions">
+                    <button mat-flat-button color="primary" class="full-width submit-btn" type="submit"
+                        [disabled]="loginForm.invalid || isLoading()">
+                        {{ isLoading() ? 'Signing in...' : 'Sign in' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

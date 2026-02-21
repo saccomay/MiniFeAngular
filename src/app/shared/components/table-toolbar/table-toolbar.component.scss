@@ -1,0 +1,136 @@
+.toolbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.left-section {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.right-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.tabs {
+    display: flex;
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 4px;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.tabButton {
+    appearance: none;
+    display: inline-block;
+    padding: 0.375em 1em 0.5em;
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    border: none;
+    background-color: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    box-shadow: none;
+    transition: background 0.3s, color 0.3s;
+
+    &:hover {
+        background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+        color: var(--text-color);
+    }
+
+    &.active {
+        background: var(--bg-color); // Different enough from surface to stand out
+        color: var(--text-color);
+        font-weight: 600;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+        // For dark mode adjustment if bg-color is too similar
+        @media (prefers-color-scheme: dark) {
+            background: color-mix(in srgb, var(--surface-color) 90%, white);
+        }
+    }
+
+    .tab-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 6px;
+        padding: 0 6px;
+        min-width: 20px;
+        height: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        border-radius: 10px; // Pill shape
+        // Color and background are set inline dynamically, providing default:
+        background-color: var(--border-color);
+        color: var(--text-color);
+    }
+}
+
+.clear-filters-btn {
+    border-radius: 8px;
+    height: 32px;
+    font-size: 13px;
+
+    mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+    }
+}
+
+.only-me-checkbox {
+    margin-top: 2px;
+}
+
+.inputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    overflow: visible;
+
+    .searchIcon {
+        position: absolute;
+        left: 8px;
+        pointer-events: none;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        color: var(--text-secondary);
+    }
+
+    input {
+        box-sizing: border-box;
+        height: 32px;
+        font-size: 14px;
+        padding: 0 0.75em 0 2.4em; // adjusted since height is explicitly set
+        line-height: 1.4;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background-color: var(--surface-color);
+        color: var(--text-color);
+        outline: none;
+        width: 167px;
+        transition: box-shadow 0.2s, border-color 0.2s;
+
+        &:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 20%, transparent);
+        }
+
+        &::placeholder {
+            color: var(--text-secondary);
+        }
+    }
+}

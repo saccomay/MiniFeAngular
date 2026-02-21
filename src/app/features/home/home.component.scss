@@ -1,0 +1,114 @@
+@use '../../shared/styles/common' as common;
+
+.dashboard-container {
+    padding: 20px;
+}
+
+.charts-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.chart-card {
+    flex: 1;
+    min-width: 300px;
+    min-height: 400px;
+}
+
+app-chart-wrapper {
+    height: 300px;
+}
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.loading-container,
+.error-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    flex-direction: column;
+}
+
+.welcome-title {
+    margin-bottom: 24px;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+// Skeleton loading effect
+.skeleton {
+    background: linear-gradient(90deg, var(--bg-color) 25%, var(--surface-color) 50%, var(--bg-color) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite linear;
+    border-radius: 4px;
+}
+
+.dark-theme .skeleton {
+    background: linear-gradient(90deg, #171717 25%, #262626 50%, #171717 75%);
+    background-size: 200% 100%;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.stats-card-skeleton {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 160px;
+    gap: 16px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+
+    .skeleton-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        margin-bottom: 8px;
+    }
+
+    .skeleton-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        gap: 8px;
+    }
+
+    .skeleton-count {
+        width: 60px;
+        height: 40px;
+        border-radius: 8px;
+    }
+
+    .skeleton-title {
+        width: 100px;
+        height: 16px;
+        border-radius: 4px;
+    }
+}

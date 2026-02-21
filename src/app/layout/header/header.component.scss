@@ -1,0 +1,108 @@
+.header-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    height: 64px; // Standard Material Toolbar height
+    position: relative;
+    z-index: 1000;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+
+    // Light Mode (Default)
+    background-color: #FFFFFF;
+    color: rgba(0, 0, 0, 0.87); // High emphasis text
+    box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2),
+        0px 4px 5px 0px rgba(0, 0, 0, 0.14),
+        0px 1px 10px 0px rgba(0, 0, 0, 0.12); // Elevation 4
+
+    // Dark Mode Override
+    :host-context(.dark-theme) & {
+        background-color: #171717; // Match --surface-color (Neutral 900)
+        color: #fafafa; // Match --text-color
+        box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.4),
+            0px 4px 5px 0px rgba(0, 0, 0, 0.28),
+            0px 1px 10px 0px rgba(0, 0, 0, 0.24);
+        border-bottom: 1px solid #262626; // Match --border-color
+    }
+}
+
+.spacer {
+    flex: 1 1 auto;
+}
+
+.logo {
+    margin-right: 48px;
+    cursor: pointer;
+    font-weight: 700; // Bold for brand
+    font-size: 1.25rem; // ~20px
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    color: inherit; // Take from parent
+    gap: 12px;
+    text-decoration: none;
+
+    &:hover {
+        opacity: 0.9;
+    }
+}
+
+.nav-links {
+    display: flex;
+    gap: 4px; // Tighter gap for bar items
+    align-items: center;
+    height: 100%;
+}
+
+.nav-links a {
+    font-weight: 500;
+    font-family: "Roboto", "Helvetica Neue", sans-serif;
+    font-size: 0.875rem; // 14px button text
+    letter-spacing: 0.02em; // Slightly wider for caps/standard
+    text-transform: capitalize; // Or uppercase if preferred
+    padding: 8px 16px; // Hit target size
+    border-radius: 4px; // Slightly rounded corners (Material Button style)
+    color: rgba(0, 0, 0, 0.6); // Medium emphasis text
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    height: 36px; // Button height
+    transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s;
+    user-select: none;
+    cursor: pointer;
+
+    :host-context(.dark-theme) & {
+        color: rgba(255, 255, 255, 0.7); // Medium emphasis on dark
+    }
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.04); // Hover overlay light
+        color: rgba(0, 0, 0, 0.87);
+
+        :host-context(.dark-theme) & {
+            background-color: rgba(255, 255, 255, 0.08); // Hover overlay dark
+            color: #FFFFFF;
+        }
+    }
+
+    &.active {
+        color: var(--primary-color);
+        background-color: rgba(37, 99, 235, 0.08); // Primary color tint
+        font-weight: 600;
+
+        :host-context(.dark-theme) & {
+            color: #90CAF9; // Light Blue 200 (Common Material Dark Primary)
+            background-color: rgba(144, 202, 249, 0.16); // Primary tint dark
+        }
+    }
+}
+
+.nav-links mat-icon {
+    margin-right: 8px;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

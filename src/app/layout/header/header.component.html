@@ -1,0 +1,45 @@
+<mat-toolbar class="header-toolbar">
+    <span class="logo" routerLink="/">MiniFeAngular</span>
+
+    <nav class="nav-links">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+            <mat-icon>dashboard</mat-icon>
+            Home
+        </a>
+        <a routerLink="/problems" routerLinkActive="active">
+            <mat-icon>warning</mat-icon>
+            Problems
+        </a>
+        <a routerLink="/hosts" routerLinkActive="active">
+            <mat-icon>computer</mat-icon>
+            Hosts
+        </a>
+        <a routerLink="/devices" routerLinkActive="active">
+            <mat-icon>devices</mat-icon>
+            Devices
+        </a>
+        <a routerLink="/taskhistory" routerLinkActive="active">
+            <mat-icon>history</mat-icon>
+            Task History
+        </a>
+    </nav>
+
+    <span class="spacer"></span>
+
+    <button mat-icon-button (click)="themeService.toggleTheme()"
+        [attr.aria-label]="themeService.theme() === 'light' ? 'Switch to dark mode' : 'Switch to light mode'">
+        <mat-icon>{{ themeService.theme() === 'light' ? 'dark_mode' : 'light_mode' }}</mat-icon>
+    </button>
+
+    <button mat-button [matMenuTriggerFor]="userMenu">
+        <mat-icon>account_circle</mat-icon>
+        User
+    </button>
+
+    <mat-menu #userMenu="matMenu">
+        <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Logout</span>
+        </button>
+    </mat-menu>
+</mat-toolbar>

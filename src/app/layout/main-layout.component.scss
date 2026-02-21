@@ -1,0 +1,13 @@
+.layout-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: var(--bg-color);
+}
+
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    box-sizing: border-box;
+    width: 100%;
+}

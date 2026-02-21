@@ -1,0 +1,10 @@
+<div class="actions-container">
+    <button mat-icon-button matTooltip="View Details" class="action-btn detail-btn" (click)="openDetailDialog()">
+        <mat-icon class="action-icon">format_list_bulleted</mat-icon>
+    </button>
+
+    <button mat-icon-button matTooltip="Open Jenkins" class="action-btn jenkins-btn" [disabled]="!hostData?.jenkins_url"
+        (click)="openJenkins()">
+        <img src="assets/images/jenkins.png" class="jenkins-logo" alt="Jenkins" />
+    </button>
+</div>

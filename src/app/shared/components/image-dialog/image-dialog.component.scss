@@ -1,0 +1,39 @@
+.dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    background-color: var(--surface-color);
+    border-bottom: 1px solid var(--border-color);
+
+    h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 500;
+        color: var(--text-color);
+    }
+}
+
+.dialog-content {
+    padding: 0 !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--bg-color); // Slightly darker bg for the image container
+    overflow: hidden;
+    max-width: 90vw;
+    max-height: 80vh;
+}
+
+.preview-image {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    display: block;
+}
+
+::ng-deep .image-dialog-panel .mat-mdc-dialog-container .mdc-dialog__surface {
+    background-color: var(--surface-color);
+    border-radius: 12px;
+    overflow: hidden;
+}

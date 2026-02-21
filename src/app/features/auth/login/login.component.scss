@@ -1,0 +1,463 @@
+// --- Variables ---
+$bg-light: #f9fafb;
+$bg-dark: #161c24;
+$paper-light: #fff;
+$paper-dark: #212b36;
+$text-primary-light: #212b36;
+$text-primary-dark: #fff;
+$text-secondary-light: #637381;
+$text-secondary-dark: #919eab;
+$primary-color: #00a76f; // Minimals.cc Green or use #212b36
+$outline-border-light: rgba(145, 158, 171, 0.2);
+$outline-border-dark: rgba(145, 158, 171, 0.12);
+
+// --- Mixins ---
+@mixin glass-effect {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    background-color: rgba(255, 255, 255, 0.8);
+
+    :host-context(.dark-theme) & {
+        background-color: rgba(22, 28, 36, 0.8);
+    }
+}
+
+// --- Main Layout ---
+.main-layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    margin: 0;
+    font-family: 'Public Sans', sans-serif; // Assuming this font is available or similar
+    background-color: $bg-light;
+
+    :host-context(.dark-theme) & {
+        background-color: $bg-dark;
+    }
+}
+
+// --- Left Panel (Welcome Section) ---
+.section-intro {
+    display: none; // Hidden by default on mobile
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 480px;
+    flex-shrink: 0;
+    padding: 0 40px; // Reduced padding, using flex centering
+    background: linear-gradient(135deg, #FFFFFF 0%, #FFFFFF 100%);
+    color: $text-primary-light;
+    position: relative;
+    overflow: hidden;
+    height: 100vh; // Force full height
+
+    :host-context(.dark-theme) & {
+        background: linear-gradient(135deg, #1A2138 0%, #0F1322 100%);
+        color: #ffffff;
+    }
+
+    @media (min-width: 900px) {
+        display: flex;
+    }
+
+    .intro-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        z-index: 2;
+        text-align: center;
+        line-height: 1.5;
+        color: $text-primary-light;
+        margin-top: 0; // Removed negative margin to push text down
+
+        :host-context(.dark-theme) & {
+            color: #ffffff;
+        }
+    }
+
+    .intro-description {
+        font-size: 1rem;
+        font-weight: 400;
+        color: $text-secondary-light;
+        margin-bottom: 24px; // Reduced to bring closer to image
+        z-index: 2;
+        text-align: center;
+        max-width: 320px;
+
+        :host-context(.dark-theme) & {
+            color: rgba(255, 255, 255, 0.6);
+        }
+    }
+
+    .intro-illustration {
+        width: 100%;
+        max-width: 480px;
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        // margin-bottom removed to allow better centering control
+
+        .illustration-wrapper {
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .intro-image {
+            width: 100%;
+            height: auto;
+            max-width: 400px; // Slightly larger
+            object-fit: contain;
+            // Stronger shadow as requested "like existing"
+            filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.4));
+            z-index: 2;
+            position: relative;
+            transition: transform 0.3s ease;
+            transform: translateY(-20px); // Push image up specifically
+
+            &:hover {
+                transform: translateY(-20px) scale(1.02);
+            }
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.5;
+            z-index: 1;
+
+            &.c1 {
+                width: 260px;
+                height: 260px;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) translate(-40px, -60px); // Moved up with image
+                background: linear-gradient(135deg, rgba($primary-color, 0.8) 0%, rgba($primary-color, 0) 70%);
+                filter: blur(60px);
+                animation: float 8s ease-in-out infinite;
+            }
+
+            &.c2 {
+                width: 220px;
+                height: 220px;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) translate(40px, 20px); // Moved up with image
+                background: linear-gradient(135deg, rgba(255, 171, 0, 0.7) 0%, rgba(255, 171, 0, 0) 70%);
+                filter: blur(50px);
+                animation: float 10s ease-in-out infinite reverse;
+            }
+        }
+    }
+
+    .intro-footer {
+        position: absolute;
+        bottom: 48px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        gap: 24px; // Increased gap slightly
+        opacity: 0.7;
+        z-index: 2;
+
+        mat-icon {
+            font-size: 24px;
+            color: $text-secondary-light;
+            transition: all 0.2s;
+
+            &:hover {
+                transform: scale(1.2);
+                color: $primary-color;
+            }
+
+            :host-context(.dark-theme) & {
+                color: #ffffff;
+                opacity: 0.7;
+            }
+        }
+    }
+}
+
+// --- Animation for Illustration ---
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+// --- Right Panel (Content Form) ---
+.content-form {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    position: relative;
+}
+
+.login-card-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 0 16px; // Internal padding
+}
+
+// --- Form Elements ---
+.login-header {
+    margin-bottom: 40px;
+
+    .title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 16px; // Increased margin
+        color: $text-primary-light;
+
+        :host-context(.dark-theme) & {
+            color: $text-primary-dark;
+        }
+    }
+
+    .subtitle {
+        font-size: 0.95rem; // Slightly larger
+        color: $text-secondary-light;
+        margin: 0;
+        display: flex;
+        gap: 4px;
+        align-items: center;
+
+        :host-context(.dark-theme) & {
+            color: $text-secondary-dark;
+        }
+
+        a {
+            color: $primary-color;
+            text-decoration: none;
+            font-weight: 600;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}
+
+// Alert Info Box
+.alert-info {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: rgba(0, 184, 217, 0.16); // Light Cyan
+    color: rgb(0, 108, 156);
+    border-radius: 8px;
+    margin-bottom: 24px;
+    font-size: 0.875rem;
+
+    mat-icon {
+        margin-right: 12px;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+    }
+
+    :host-context(.dark-theme) & {
+        background-color: rgba(0, 184, 217, 0.16);
+        color: rgb(97, 243, 243);
+    }
+}
+
+// Form Fields
+mat-form-field {
+    margin-bottom: 16px;
+
+    ::ng-deep .mat-mdc-text-field-wrapper {
+        background-color: transparent !important;
+        padding: 0 !important;
+        height: 56px !important;
+    }
+
+    ::ng-deep .mat-mdc-form-field-flex {
+        height: 56px !important;
+        align-items: center !important;
+        padding: 0 14px !important;
+    }
+
+    ::ng-deep .mat-mdc-notched-outline__stroke {
+        border-color: $outline-border-light !important;
+    }
+
+    :host-context(.dark-theme) & {
+        ::ng-deep .mat-mdc-notched-outline__stroke {
+            border-color: $outline-border-dark !important;
+        }
+    }
+
+    &.mat-focused {
+        ::ng-deep .mat-mdc-notched-outline__stroke {
+            border-color: $text-primary-light !important;
+            border-width: 2px !important;
+        }
+
+        :host-context(.dark-theme) & {
+            ::ng-deep .mat-mdc-notched-outline__stroke {
+                border-color: $text-primary-dark !important;
+            }
+        }
+    }
+}
+
+.password-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 24px;
+    margin-top: -8px;
+
+    .forgot-password {
+        font-size: 0.875rem;
+        text-decoration: none;
+        color: $text-primary-light;
+        font-weight: 600;
+
+        :host-context(.dark-theme) & {
+            color: $text-primary-dark;
+        }
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+.actions {
+    margin-bottom: 24px;
+
+    .submit-btn {
+        height: 48px;
+        font-size: 0.9375rem;
+        font-weight: 700;
+        background-color: #212B36 !important;
+        color: #fff !important;
+        border-radius: 8px !important;
+        box-shadow: none;
+
+        // Disabled state — visually dim when form is invalid
+        &:disabled,
+        &[disabled],
+        &.mat-mdc-button-disabled {
+            background-color: rgba(145, 158, 171, 0.24) !important;
+            color: rgba(145, 158, 171, 0.8) !important;
+            cursor: not-allowed;
+        }
+
+        :host-context(.dark-theme) & {
+            background-color: #fff !important;
+            color: #212B36 !important;
+
+            &:disabled,
+            &[disabled],
+            &.mat-mdc-button-disabled {
+                background-color: rgba(145, 158, 171, 0.12) !important;
+                color: rgba(145, 158, 171, 0.5) !important;
+            }
+        }
+    }
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 24px 0; // Vertical spacing
+    color: $text-secondary-light;
+
+    :host-context(.dark-theme) & {
+        color: $text-secondary-dark;
+    }
+
+    mat-divider {
+        flex: 1;
+        border-top-color: rgba(145, 158, 171, 0.24); // Solid line color
+    }
+
+    span {
+        padding: 0 16px;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        color: $text-secondary-light;
+
+        :host-context(.dark-theme) & {
+            color: $text-secondary-dark;
+        }
+    }
+}
+
+// GitHub login button — full width, primary CTA
+.github-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 48px;
+    width: 100%;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    background-color: #24292f !important;
+    color: #ffffff !important;
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s, box-shadow 0.2s;
+    margin-bottom: 0;
+    cursor: pointer;
+    line-height: 1; // Prevent text baseline shift
+
+    &:hover {
+        background-color: #32383f !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    &:active {
+        background-color: #1c2128 !important;
+        box-shadow: none;
+    }
+
+    // Fix icon vertical alignment with text
+    .github-btn-inner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .github-icon {
+        flex-shrink: 0;
+        display: block;
+        line-height: 0;
+    }
+
+    :host-context(.dark-theme) & {
+        background-color: #f0f6fc !important;
+        color: #24292f !important;
+
+        &:hover {
+            background-color: #cdd9e5 !important;
+        }
+    }
+}
+
+.full-width {
+    width: 100%;
+}

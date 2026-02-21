@@ -1,0 +1,392 @@
+// Custom variables to match Material UI / Modern sleek looks
+$border-radius: 12px;
+$card-bg: #ffffff;
+$card-border: rgba(145, 158, 171, 0.2);
+$text-primary: #212b36;
+$text-secondary: #637381;
+
+:host {
+    display: block;
+}
+
+.dialog-header.compact-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid $card-border;
+    background-color: var(--dialog-header-bg, #f9fafb);
+    border-radius: $border-radius $border-radius 0 0;
+    min-height: 52px;
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        overflow: hidden;
+
+        .header-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+            color: var(--primary-color, #1890FF);
+            flex-shrink: 0;
+            opacity: 0.85;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+
+            .header-label {
+                font-size: 0.68rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.8px;
+                color: var(--text-secondary, $text-secondary);
+                line-height: 1;
+                margin-bottom: 2px;
+            }
+
+            .header-hostname {
+                font-size: 0.95rem;
+                font-weight: 700;
+                color: var(--text-primary, $text-primary);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                line-height: 1.2;
+            }
+        }
+    }
+
+    .compact-close-btn {
+        width: 28px;
+        height: 28px;
+        line-height: 28px;
+        color: var(--text-secondary, $text-secondary);
+        padding: 0;
+        flex-shrink: 0;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+
+        &:hover {
+            opacity: 1;
+        }
+
+        mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+            line-height: 18px;
+        }
+    }
+}
+
+::ng-deep .host-detail-dialog-panel {
+    .mdc-dialog__surface {
+        border-radius: 12px;
+        box-shadow: 0 4px 12px 0 rgba(145, 158, 171, 0.12);
+    }
+}
+
+
+.dialog-content.tight-content {
+    padding: 20px !important;
+    max-height: 70vh;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: rgba(145, 158, 171, 0.4);
+        border-radius: 4px;
+    }
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.mt-4 {
+    margin-top: 1rem;
+}
+
+.w-full {
+    width: 100%;
+}
+
+.info-card,
+.edit-card {
+    background: var(--card-bg, $card-bg);
+    border: 1px solid var(--card-border, $card-border);
+    border-radius: $border-radius;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+
+    h3 {
+        margin: 0 0 12px 0;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+        color: var(--text-secondary, $text-secondary);
+        border-bottom: 1px solid var(--card-border, $card-border);
+        padding-bottom: 6px;
+    }
+}
+
+.data-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--card-border, $card-border);
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    .label {
+        font-weight: 600;
+        color: var(--text-secondary, $text-secondary);
+        flex: 0 0 40%;
+        font-size: 0.85rem;
+    }
+
+    .value {
+        color: var(--text-primary, $text-primary);
+        font-weight: 500;
+        text-align: right;
+        flex: 1;
+        font-size: 0.85rem;
+        word-break: break-all;
+
+        &.font-mono {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.8rem;
+        }
+    }
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background-color: rgba(145, 158, 171, 0.16);
+    color: #637381;
+
+    &.active {
+        background-color: rgba(34, 197, 94, 0.16);
+        color: #118D57;
+    }
+}
+
+.upload-section {
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+
+        .upload-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary, $text-primary);
+        }
+
+        .small-btn {
+            height: 28px;
+            padding: 0 10px;
+            font-size: 0.75rem;
+
+            mat-icon {
+                font-size: 14px;
+                width: 14px;
+                height: 14px;
+                line-height: 14px;
+                margin-right: 4px;
+            }
+        }
+    }
+}
+
+.image-preview-container {
+    width: 100%;
+    height: 160px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    border: 1px dashed var(--card-border, $card-border);
+    background-color: var(--dialog-header-bg, #f4f6f8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    &.has-image {
+        border-style: solid;
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .clear-img-btn.delete-icon {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background-color: rgba(255, 72, 66, 0.1);
+        /* Light red bg */
+        color: #FF4842;
+        /* Red color for delete */
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(4px);
+        transition: all 0.2s ease;
+
+        &:hover {
+            background-color: #FF4842;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        ::ng-deep .mat-mdc-button-touch-target {
+            display: none;
+            /* Helps with weird spacing on icon buttons */
+        }
+
+        mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+            line-height: 18px;
+            margin: 0;
+            padding: 0;
+        }
+    }
+}
+
+::ng-deep .textarea-field {
+    .mat-mdc-text-field-wrapper {
+        align-items: flex-start;
+    }
+
+    .mat-icon {
+        margin-top: 8px;
+    }
+}
+
+.comment-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+
+    .save-comment-btn {
+        border-radius: 6px;
+        font-weight: 500;
+        padding: 0 16px;
+        height: 36px;
+        font-size: 0.85rem;
+        letter-spacing: 0.3px;
+
+        mat-spinner {
+            margin: 0 auto;
+        }
+    }
+}
+
+/* Dark Mode Overrides */
+// Remove double comment block
+/* Dark Mode Overrides */
+:host-context(.dark-theme) {
+    .dialog-header.compact-header {
+        background-color: #212b36;
+        border-color: rgba(145, 158, 171, 0.24);
+
+        .header-label {
+            color: #919eab;
+        }
+
+        .header-hostname {
+            color: #ffffff;
+        }
+
+        .header-icon {
+            color: #1890FF;
+        }
+
+        .compact-close-btn {
+            color: #919eab;
+        }
+    }
+
+    .upload-section .section-header .upload-label {
+        color: #ffffff;
+    }
+
+    .data-row {
+        border-color: rgba(145, 158, 171, 0.16);
+
+        // Dotted borders look better in dark mode
+        border-bottom-style: dotted;
+
+        .label {
+            color: #919eab;
+        }
+
+        .value {
+            color: #ffffff;
+        }
+    }
+
+    .image-preview-container {
+        background-color: #212b36;
+        border-color: rgba(145, 158, 171, 0.24);
+    }
+}
+
+/* Global dialog surface override for dark mode (applies outside of :host) */
+[data-theme='dark'] {
+    .host-detail-dialog-panel {
+        .mdc-dialog__surface {
+            background-color: #212b36 !important;
+            border: 1px solid rgba(145, 158, 171, 0.24);
+        }
+
+        // Ensure the dialog content container background matches
+        .mat-mdc-dialog-content {
+            background-color: #212b36;
+            color: #ffffff;
+        }
+
+        // Apply dark mode to cards globally within the dialog panel
+        .info-card,
+        .edit-card {
+            background-color: #161c24 !important;
+            border-color: rgba(145, 158, 171, 0.24) !important;
+
+            h3 {
+                color: #919eab !important;
+                border-color: rgba(145, 158, 171, 0.24) !important;
+            }
+        }
+    }
+}

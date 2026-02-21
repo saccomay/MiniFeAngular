@@ -1,0 +1,147 @@
+<div class="dialog-header compact-header">
+    <div class="header-left">
+        <mat-icon class="header-icon">computer</mat-icon>
+        <div class="header-text">
+            <span class="header-label">Host Details</span>
+            <span class="header-hostname">{{ host.hostname || 'Unknown' }}</span>
+        </div>
+    </div>
+    <button mat-icon-button class="compact-close-btn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+
+<mat-dialog-content class="dialog-content tight-content">
+    <div class="content-grid">
+
+        <!-- Left Column: Core Info & Notes -->
+        <div class="info-column">
+            <div class="info-card">
+                <h3>Hardware Information</h3>
+
+                <div class="data-row">
+                    <span class="label">Asset No:</span>
+                    <span class="value font-mono">{{ host.asset_no || '-' }}</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="label">MAC Address:</span>
+                    <span class="value font-mono">{{ host.mac || host.mac_address || '-' }}</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="label">Serial:</span>
+                    <span class="value font-mono">{{ host.serial || '-' }}</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="label">IP Address:</span>
+                    <span class="value font-mono">{{ host.ip || '-' }}</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="label">Model:</span>
+                    <span class="value">{{ host.model || '-' }}</span>
+                </div>
+            </div>
+
+            <div class="info-card mt-4">
+                <h3>Asset Details</h3>
+
+                <div class="data-row">
+                    <span class="label">Description:</span>
+                    <span class="value">{{ host.asset_description || '-' }}</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="label">PO Date:</span>
+                    <span class="value">{{ host.po_date || '-' }}</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="label">Status:</span>
+                    <span class="value">
+                        <span class="status-badge" [class.active]="host.town_status === 'Active'">
+                            {{ host.town_status || host.status || '-' }}
+                        </span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="edit-card mt-4 comment-card">
+                <h3>Notes</h3>
+                <mat-form-field appearance="outline" class="w-full textarea-field">
+                    <mat-label>Comment</mat-label>
+                    <textarea matInput [(ngModel)]="editData.comment" rows="4"
+                        placeholder="Add comments here..."></textarea>
+                    <mat-icon matPrefix>comment</mat-icon>
+                </mat-form-field>
+                <div class="comment-actions">
+                    <button mat-flat-button color="primary" class="save-comment-btn" (click)="updateComment()"
+                        [disabled]="isSaving()">
+                        <mat-spinner diameter="16" *ngIf="isSaving()"></mat-spinner>
+                        <span *ngIf="!isSaving()">Save Comment</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Editable Inputs & Image -->
+        <div class="edit-column">
+            <div class="edit-card">
+                <h3>Media properties</h3>
+
+                <!-- Image Host File Upload -->
+                <div class="upload-section">
+                    <div class="section-header">
+                        <span class="upload-label">Image Host</span>
+                        <input type="file" #imageHostInput hidden accept="image/*"
+                            (change)="onFileSelected($event, 'host')">
+                        <button mat-stroked-button color="primary" type="button" class="small-btn"
+                            (click)="imageHostInput.click()" [disabled]="isUploadingHost()">
+                            <mat-spinner diameter="14" *ngIf="isUploadingHost()"></mat-spinner>
+                            <mat-icon *ngIf="!isUploadingHost()">upload</mat-icon>
+                            <span *ngIf="!isUploadingHost()">Upload</span>
+                            <span *ngIf="isUploadingHost()">...</span>
+                        </button>
+                    </div>
+                    <div class="image-preview-container" [class.has-image]="imageUrl || fallbackUrl">
+                        <img [src]="imageUrl || fallbackUrl" (error)="onImageError($event, 'host')"
+                            alt="Host Image Preview">
+                        <button *ngIf="selectedImageHostFile || host.image_host" mat-icon-button
+                            class="clear-img-btn delete-icon flex-center" (click)="clearImage('host')"
+                            matTooltip="Remove Image">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Image Label File Upload -->
+                <div class="upload-section mt-4">
+                    <div class="section-header">
+                        <span class="upload-label">Image Label</span>
+                        <input type="file" #imageLabelInput hidden accept="image/*"
+                            (change)="onFileSelected($event, 'label')">
+                        <button mat-stroked-button color="primary" type="button" class="small-btn"
+                            (click)="imageLabelInput.click()" [disabled]="isUploadingLabel()">
+                            <mat-spinner diameter="14" *ngIf="isUploadingLabel()"></mat-spinner>
+                            <mat-icon *ngIf="!isUploadingLabel()">upload</mat-icon>
+                            <span *ngIf="!isUploadingLabel()">Upload</span>
+                            <span *ngIf="isUploadingLabel()">...</span>
+                        </button>
+                    </div>
+                    <div class="image-preview-container" [class.has-image]="imageLabelUrl || fallbackUrl">
+                        <img [src]="imageLabelUrl || fallbackUrl" (error)="onImageError($event, 'label')"
+                            alt="Label Image Preview">
+                        <button *ngIf="selectedImageLabelFile || host.image_label" mat-icon-button
+                            class="clear-img-btn delete-icon flex-center" (click)="clearImage('label')"
+                            matTooltip="Remove Label">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</mat-dialog-content>

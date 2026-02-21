@@ -1,0 +1,192 @@
+@use '@angular/material' as mat;
+@import 'app/shared/styles/ag-grid-custom-theme.scss';
+
+// @import 'ag-grid-community/styles/ag-grid.css';
+@include mat.core();
+
+// Use defaults
+$light-theme: mat.define-theme();
+$dark-theme: mat.define-theme((color: (theme-type: dark)));
+
+html {
+    @include mat.all-component-themes($light-theme);
+}
+
+.dark-theme {
+    @include mat.all-component-colors($dark-theme);
+}
+
+// Global Variables
+:root {
+    // Brand Colors
+    --primary-color: #2563EB; // Blue 600
+    --primary-hover: #1D4ED8; // Blue 700
+    --primary-light: #EFF6FF; // Blue 50
+
+    // Semantic Colors
+    --warn-color: #EF4444; // Red 500
+    --success-color: #10B981; // Emerald 500
+    --warning-color: #F59E0B; // Amber 500
+
+    // Neutral Colors
+    --bg-color: #F3F4F6; // Gray 100
+    --surface-color: #FFFFFF; // White
+    --border-color: #E5E7EB; // Gray 200
+
+    // Text Colors
+    --text-color: #111827; // Gray 900
+    --text-secondary: #6B7280; // Gray 500
+}
+
+.dark-theme {
+    // Deep Black (Neutral/Zinc)
+    --bg-color: #0a0a0a; // Neutral 950
+    --surface-color: #171717; // Neutral 900
+    --border-color: #262626; // Neutral 800
+
+    --text-color: #fafafa; // Neutral 50
+    --text-secondary: #a3a3a3; // Neutral 400
+
+    --primary-light: rgba(59, 130, 246, 0.15); // Blue 500 at 15%
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', Roboto, "Helvetica Neue", sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+// Global Utilities
+.card,
+mat-card,
+.mat-mdc-card {
+    background-color: var(--surface-color) !important; // Override material default
+    border: 1px solid var(--border-color) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1) !important;
+    // padding: 24px; // mat-card handles padding properly typically, or we need to be careful
+}
+
+// Button Overrides for Minimal Web Design
+.mat-mdc-button-base,
+.mat-mdc-unelevated-button,
+.mat-mdc-outlined-button {
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+    text-transform: none !important;
+
+    .mat-icon {
+        font-size: 20px !important;
+        height: 20px !important;
+        width: 20px !important;
+        line-height: 20px !important;
+        margin-right: 4px !important; // Some spacing between icon and text
+    }
+}
+
+// Flat Primary Buttons (e.g., "Import", "New")
+.mat-mdc-unelevated-button.mat-primary {
+    background-color: #212b36 !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 16px 0 rgba(33, 43, 54, 0.24) !important;
+    transition: all 0.2s ease-in-out !important;
+
+    &:hover {
+        background-color: #454f5b !important;
+        box-shadow: 0 8px 16px 0 rgba(33, 43, 54, 0.48) !important;
+    }
+
+    &:active {
+        background-color: #161c24 !important;
+    }
+}
+
+// Outlined Buttons (e.g., "Reload")
+.mat-mdc-outlined-button {
+    border-color: rgba(145, 158, 171, 0.32) !important;
+    color: var(--text-color) !important;
+    transition: all 0.2s ease-in-out !important;
+
+    &:hover {
+        background-color: rgba(145, 158, 171, 0.08) !important;
+        border-color: var(--text-color) !important;
+    }
+}
+
+// Dark Mode Overrides
+.dark-theme {
+    .mat-mdc-unelevated-button.mat-primary {
+        background-color: #ffffff !important;
+        color: #212b36 !important;
+        box-shadow: none !important;
+
+        &:hover {
+            background-color: #dfe3e8 !important;
+        }
+
+        &:active {
+            background-color: #919eab !important;
+        }
+    }
+
+    .mat-mdc-outlined-button {
+        border-color: rgba(255, 255, 255, 0.24) !important;
+        color: #ffffff !important;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.08) !important;
+            border-color: #ffffff !important;
+        }
+    }
+
+    /* Global dialog surface override for dark mode (applies outside of :host) */
+    .host-detail-dialog-panel {
+        .mdc-dialog__surface {
+            background-color: #212b36 !important;
+            border: 1px solid rgba(145, 158, 171, 0.24);
+        }
+
+        // Ensure the dialog content container background matches
+        .mat-mdc-dialog-content {
+            background-color: #212b36;
+            color: #ffffff;
+        }
+
+        // Apply dark mode to cards globally within the dialog panel
+        .info-card,
+        .edit-card {
+            background-color: #161c24 !important;
+            border-color: rgba(145, 158, 171, 0.24) !important;
+
+            h3 {
+                color: #919eab !important;
+                border-color: rgba(145, 158, 171, 0.24) !important;
+            }
+        }
+
+        // Dialog header dark mode
+        .dialog-header.compact-header {
+            background-color: #212b36 !important;
+            border-color: rgba(145, 158, 171, 0.24) !important;
+
+            .header-label {
+                color: #919eab !important;
+            }
+
+            .header-hostname {
+                color: #ffffff !important;
+            }
+
+            .header-icon {
+                color: #1890FF !important;
+            }
+
+            .compact-close-btn {
+                color: #919eab !important;
+            }
+        }
+    }
+}
