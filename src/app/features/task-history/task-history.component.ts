@@ -8,6 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
+import { StatusCellRendererComponent } from '../../shared/components/custom-cells/status-cell-renderer/status-cell-renderer.component';
 import { TableToolbarComponent, TabOption } from '../../shared/components/table-toolbar/table-toolbar.component';
 import { AuthService } from '../../core/services/auth.service';
 import { effect } from '@angular/core';
@@ -17,7 +18,7 @@ import { SkeletonLoadingOverlay } from '../../shared/components/custom-cells/ske
 @Component({
   selector: 'app-task-history',
   standalone: true,
-  imports: [AgGridWrapperComponent, MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, CommonModule, TableToolbarComponent, SkeletonLoadingOverlay],
+  imports: [AgGridWrapperComponent, MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, CommonModule, TableToolbarComponent, SkeletonLoadingOverlay, StatusCellRendererComponent],
   templateUrl: './task-history.component.html',
   styleUrls: ['./task-history.component.scss', '../../shared/styles/table-page.scss']
 })
@@ -53,7 +54,7 @@ export class TaskHistoryComponent {
   columnDefs: ColDef<TaskHistory>[] = [
     { field: 'create_time', headerName: 'Created At', sort: 'desc' },
     { field: 'task_name', headerName: 'Task Name' },
-    { field: 'task_status', headerName: 'Status' },
+    { field: 'task_status', headerName: 'Status', cellRenderer: StatusCellRendererComponent },
     {
       field: 'domains_blocked', headerName: 'Blocked Domains',
       cellRenderer: (params: ICellRendererParams) => {

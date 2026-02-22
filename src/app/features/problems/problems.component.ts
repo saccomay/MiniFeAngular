@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { StatusCellRendererComponent } from '../../shared/components/custom-cells/status-cell-renderer/status-cell-renderer.component';
 import { TableToolbarComponent, TabOption } from '../../shared/components/table-toolbar/table-toolbar.component';
 import { AuthService } from '../../core/services/auth.service';
 import { effect } from '@angular/core';
@@ -15,7 +16,7 @@ import { SkeletonLoadingOverlay } from '../../shared/components/custom-cells/ske
 @Component({
   selector: 'app-problems',
   standalone: true,
-  imports: [AgGridWrapperComponent, MatButtonModule, MatIconModule, MatProgressSpinnerModule, TableToolbarComponent, SkeletonLoadingOverlay],
+  imports: [AgGridWrapperComponent, MatButtonModule, MatIconModule, MatProgressSpinnerModule, TableToolbarComponent, SkeletonLoadingOverlay, StatusCellRendererComponent],
   templateUrl: './problems.component.html',
   styleUrls: ['./problems.component.scss', '../../shared/styles/table-page.scss']
 })
@@ -53,7 +54,9 @@ export class ProblemsComponent {
     { field: 'issue_message', headerName: 'Message', flex: 2 },
     { field: 'note', headerName: 'Note', editable: true, cellEditor: 'agTextCellEditor' },
     {
-      field: 'status', headerName: 'Status', editable: true, cellEditor: 'agSelectCellEditor',
+      field: 'status', headerName: 'Status',
+      cellRenderer: StatusCellRendererComponent,
+      editable: true, cellEditor: 'agSelectCellEditor',
       cellEditorParams: { values: ['Pending', 'Resolved', 'Ignored'] }
     },
     { field: 'owner', headerName: 'Owner' },

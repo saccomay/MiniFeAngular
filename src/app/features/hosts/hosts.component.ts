@@ -16,11 +16,12 @@ import { AuthService } from '../../core/services/auth.service';
 import { effect } from '@angular/core';
 
 import { SkeletonLoadingOverlay } from '../../shared/components/custom-cells/skeleton-loading-overlay/skeleton-loading-overlay';
+import { FileImportDialogComponent } from '../../shared/components/file-import-dialog/file-import-dialog.component';
 
 @Component({
   selector: 'app-hosts',
   standalone: true,
-  imports: [AgGridWrapperComponent, MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, StatusCellRendererComponent, HostCellRendererComponent, HostActionsCellRendererComponent, ImageCellRendererComponent, TableToolbarComponent, SkeletonLoadingOverlay],
+  imports: [AgGridWrapperComponent, MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, TableToolbarComponent, SkeletonLoadingOverlay],
   templateUrl: './hosts.component.html',
   styleUrls: ['./hosts.component.scss', '../../shared/styles/table-page.scss']
 })
@@ -28,6 +29,7 @@ export class HostsComponent {
   hostsService = inject(HostsService);
   snackBar = inject(MatSnackBar);
   authService = inject(AuthService);
+  dialog = inject(MatDialog);
 
   private gridApi?: GridApi;
 
@@ -134,17 +136,28 @@ export class HostsComponent {
     this.hostsService.hostsResource.reload();
   }
 
-  async onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      try {
-        await this.hostsService.importHosts(file);
-        this.snackBar.open('Import successful', 'Close', { duration: 3000 });
-        this.reload();
-      } catch (e) {
-        this.snackBar.open('Import failed', 'Close', { duration: 3000 });
+  openImportDialog() {
+    const dialogRef = this.dialog.open(FileImportDialogComponent, {
+      width: '500px',
+      data: {
+        title: 'Import Hosts',
+        accept: '.csv'
+      },
+      panelClass: 'custom-dialog-container',
+      autoFocus: false
+    });
+
+    dialogRef.afterClosed().subscribe(async (file: File | null) => {
+      if (file) {
+        try {
+          await this.hostsService.importHosts(file);
+          this.snackBar.open('Import successful', 'Close', { duration: 3000 });
+          this.reload();
+        } catch (e) {
+          this.snackBar.open('Import failed', 'Close', { duration: 3000 });
+        }
       }
-    }
+    });
   }
 
   onGridReady(params: GridReadyEvent) {

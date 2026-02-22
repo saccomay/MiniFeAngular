@@ -1,0 +1,74 @@
+<div class="dialog-container">
+    <div class="dialog-header">
+        <h2 mat-dialog-title>{{ data.title || 'Add files' }}</h2>
+        <button mat-icon-button (click)="close()" class="close-button" aria-label="Close dialog">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <mat-dialog-content class="dialog-content">
+        <div class="dropzone" [class.dragging]="isDragging" (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+
+            <input #fileInput type="file" [accept]="data.accept" (change)="onFileSelected($event)"
+                style="display: none">
+
+            @if (!selectedFile) {
+            <div class="illustration-container">
+                <!-- Premium Minimals style SVG illustration -->
+                <svg width="220" height="160" viewBox="0 0 220 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="110" cy="80" r="70" fill="var(--m-color-primary-lighter)" opacity="0.4" />
+                    <circle cx="110" cy="80" r="50" fill="var(--m-color-primary-light)" opacity="0.6" />
+                    <path
+                        d="M142.5 95H77.5C73.3579 95 70 91.6421 70 87.5V57.5C70 53.3579 73.3579 50 77.5 50H95L102.5 57.5H142.5C146.642 57.5 150 60.8579 150 65V87.5C150 91.6421 146.642 95 142.5 95Z"
+                        fill="#FFA48D" />
+                    <path
+                        d="M142.5 105H77.5C73.3579 105 70 101.642 70 97.5V67.5C70 63.3579 73.3579 60 77.5 60H142.5C146.642 60 150 63.3579 150 67.5V97.5C150 101.642 146.642 105 142.5 105Z"
+                        fill="var(--m-color-primary-main)" />
+                    <path d="M95 75L110 60L125 75" stroke="white" stroke-width="3" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M110 90V65" stroke="white" stroke-width="3" stroke-linecap="round" />
+                    <circle cx="160" cy="40" r="4" fill="var(--m-color-primary-main)" opacity="0.6" />
+                    <circle cx="60" cy="110" r="6" fill="#FFA48D" opacity="0.8" />
+                    <circle cx="170" cy="100" r="3" fill="var(--text-color-secondary)" opacity="0.4" />
+                    <path d="M40 50L50 60" stroke="#FF4842" stroke-width="2" stroke-linecap="round" />
+                    <path d="M180 80L170 70" stroke="var(--m-color-primary-main)" stroke-width="2"
+                        stroke-linecap="round" />
+                </svg>
+            </div>
+
+            <div class="drop-text-content">
+                <h3>Select files</h3>
+                <p>Drop files here or click <span class="browse-link" (click)="triggerFileInput()">browse</span>
+                    thorough your machine</p>
+            </div>
+            } @else {
+            <div class="selected-file-view">
+                <div class="file-icon-wrapper">
+                    <mat-icon class="file-icon">description</mat-icon>
+                </div>
+                <div class="file-info">
+                    <span class="file-name" [title]="selectedFile.name">{{ selectedFile.name }}</span>
+                    <span class="file-size">{{ fileSizeString }}</span>
+                </div>
+                <button mat-icon-button (click)="removeFile($event)" class="remove-file-button"
+                    matTooltip="Remove file">
+                    <mat-icon>close</mat-icon>
+                </button>
+                <!-- Also allow replacing -->
+                <div class="replace-overlay" (click)="triggerFileInput()">
+                    <span>Click to replace</span>
+                </div>
+            </div>
+            }
+        </div>
+    </mat-dialog-content>
+
+    <div mat-dialog-actions class="dialog-actions">
+        <button mat-button (click)="close()">Cancel</button>
+        <button mat-flat-button [color]="selectedFile ? 'primary' : ''" [disabled]="!selectedFile" (click)="upload()"
+            class="upload-button">
+            <mat-icon>upload</mat-icon> Upload
+        </button>
+    </div>
+</div>

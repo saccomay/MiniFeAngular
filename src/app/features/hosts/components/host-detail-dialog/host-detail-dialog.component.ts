@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Host, HostsService } from '../../hosts.service';
+import { FileImportDialogComponent } from '../../../../shared/components/file-import-dialog/file-import-dialog.component';
 
 @Component({
     standalone: true,
@@ -29,6 +30,7 @@ import { Host, HostsService } from '../../hosts.service';
 export class HostDetailDialogComponent implements OnInit {
     private hostsService = inject(HostsService);
     private snackBar = inject(MatSnackBar);
+    private matDialog = inject(MatDialog);
 
     host: Host;
 
@@ -90,59 +92,66 @@ export class HostDetailDialogComponent implements OnInit {
         }
     }
 
-    async onFileSelected(event: any, type: 'host' | 'label') {
-        const file: File = event.target.files[0];
-        if (file && this.host.hostname) {
-            try {
-                if (type === 'host') {
-                    this.isUploadingHost.set(true);
-                    this.selectedImageHostFile = file;
+    openImageDialog(type: 'host' | 'label') {
+        const dialogRef = this.matDialog.open(FileImportDialogComponent, {
+            width: '500px',
+            data: {
+                title: type === 'host' ? 'Upload Image Host' : 'Upload Image Label',
+                accept: 'image/*'
+            },
+            panelClass: 'custom-dialog-container',
+            autoFocus: false
+        });
 
-                    // Create local preview immediately for UX
-                    const reader = new FileReader();
-                    reader.onload = (e: any) => {
-                        this.imageUrl = e.target.result;
-                    };
-                    reader.readAsDataURL(file);
-
-                    // Execute API call
-                    const formData = new FormData();
-                    formData.append('image_host_file', file);
-                    await this.hostsService.updateHost(this.host.hostname, formData as any);
-
-                    this.editData.image_host = file.name;
-                    this.host.image_host = file.name;
-                    this.snackBar.open('Host Image uploaded successfully', 'Close', { duration: 3000 });
-                    this.updateGridRow();
-
-                } else if (type === 'label') {
-                    this.isUploadingLabel.set(true);
-                    this.selectedImageLabelFile = file;
-
-                    const reader = new FileReader();
-                    reader.onload = (e: any) => {
-                        this.imageLabelUrl = e.target.result;
-                    };
-                    reader.readAsDataURL(file);
-
-                    // Execute API call
-                    const formData = new FormData();
-                    formData.append('image_label_file', file);
-                    await this.hostsService.updateHost(this.host.hostname, formData as any);
-
-                    this.editData.image_label = file.name;
-                    this.host.image_label = file.name;
-                    this.snackBar.open('Label Image uploaded successfully', 'Close', { duration: 3000 });
-                    this.updateGridRow();
-                }
-            } catch (error) {
-                this.snackBar.open('Failed to upload image', 'Close', { duration: 3000 });
-                console.error(error);
-                // Optionally revert preview
-            } finally {
-                if (type === 'host') this.isUploadingHost.set(false);
-                if (type === 'label') this.isUploadingLabel.set(false);
+        dialogRef.afterClosed().subscribe(async (file: File | null) => {
+            if (file && this.host.hostname) {
+                await this.uploadImage(file, type);
             }
+        });
+    }
+
+    private async uploadImage(file: File, type: 'host' | 'label') {
+        try {
+            if (type === 'host') {
+                this.isUploadingHost.set(true);
+                this.selectedImageHostFile = file;
+
+                const reader = new FileReader();
+                reader.onload = (e: any) => { this.imageUrl = e.target.result; };
+                reader.readAsDataURL(file);
+
+                const formData = new FormData();
+                formData.append('image_host_file', file);
+                await this.hostsService.updateHost(this.host.hostname!, formData as any);
+
+                this.editData.image_host = file.name;
+                this.host.image_host = file.name;
+                this.snackBar.open('Host Image uploaded successfully', 'Close', { duration: 3000 });
+                this.updateGridRow();
+
+            } else if (type === 'label') {
+                this.isUploadingLabel.set(true);
+                this.selectedImageLabelFile = file;
+
+                const reader = new FileReader();
+                reader.onload = (e: any) => { this.imageLabelUrl = e.target.result; };
+                reader.readAsDataURL(file);
+
+                const formData = new FormData();
+                formData.append('image_label_file', file);
+                await this.hostsService.updateHost(this.host.hostname!, formData as any);
+
+                this.editData.image_label = file.name;
+                this.host.image_label = file.name;
+                this.snackBar.open('Label Image uploaded successfully', 'Close', { duration: 3000 });
+                this.updateGridRow();
+            }
+        } catch (error) {
+            this.snackBar.open('Failed to upload image', 'Close', { duration: 3000 });
+            console.error(error);
+        } finally {
+            if (type === 'host') this.isUploadingHost.set(false);
+            if (type === 'label') this.isUploadingLabel.set(false);
         }
     }
 

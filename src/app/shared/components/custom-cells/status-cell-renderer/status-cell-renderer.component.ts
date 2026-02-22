@@ -23,7 +23,7 @@ export class StatusCellRendererComponent implements ICellRendererAngularComp {
 
     // Mapping generic status values to color semantics
     // We can expand this map as new statuses are discovered
-    private statusColorMap: Record<string, 'active' | 'inactive' | 'pending' | 'warning' | 'default'> = {
+    private statusColorMap: Record<string, 'active' | 'info' | 'inactive' | 'pending' | 'warning' | 'default'> = {
         // Green / Active variants
         'active': 'active',
         'operational': 'active',
@@ -32,23 +32,30 @@ export class StatusCellRendererComponent implements ICellRendererAngularComp {
         'success': 'active',
         'in use': 'active',
 
+        // Blue / Info variants
+        'running': 'info',         // devices: job = Running (blue #3B82F6)
+
         // Red / Error variants
         'inactive': 'inactive',
         'out of stock': 'inactive',
         'error': 'inactive',
         'offline': 'inactive',
         'failed': 'inactive',
+        'adb-not-found': 'inactive',  // devices: adb not found
+        'not found': 'inactive',
 
         // Orange / Warning variants
         'needs maintenance': 'warning',
         'paused': 'warning',
         'on hold': 'warning',
+        'audit': 'warning',        // devices: device in audit state (#F59E0B)
+        'pending': 'warning',      // problems: status = Pending (#F59E0B)
 
-        // Gray / Pending variants
-        'pending': 'pending',
+        // Gray / Default variants
         'investigating': 'pending',
         'unknown': 'pending',
         'not in use': 'pending',
+        'ignored': 'pending',      // problems: status = Ignored (#637381)
     };
 
     agInit(params: ICellRendererParams): void {

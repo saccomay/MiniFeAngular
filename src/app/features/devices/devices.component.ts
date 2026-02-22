@@ -5,17 +5,20 @@ import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { StatusCellRendererComponent } from '../../shared/components/custom-cells/status-cell-renderer/status-cell-renderer.component';
 import { TableToolbarComponent, TabOption } from '../../shared/components/table-toolbar/table-toolbar.component';
 import { AuthService } from '../../core/services/auth.service';
 import { effect } from '@angular/core';
 
 import { SkeletonLoadingOverlay } from '../../shared/components/custom-cells/skeleton-loading-overlay/skeleton-loading-overlay';
+import { FileImportDialogComponent } from '../../shared/components/file-import-dialog/file-import-dialog.component';
 
 @Component({
   selector: 'app-devices',
   standalone: true,
-  imports: [AgGridWrapperComponent, MatButtonModule, MatIconModule, MatProgressSpinnerModule, TableToolbarComponent, SkeletonLoadingOverlay],
+  imports: [AgGridWrapperComponent, MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, TableToolbarComponent, SkeletonLoadingOverlay, StatusCellRendererComponent],
   templateUrl: './devices.component.html',
   styleUrls: ['./devices.component.scss', '../../shared/styles/table-page.scss']
 })
@@ -23,6 +26,7 @@ export class DevicesComponent {
   devicesService = inject(DevicesService);
   snackBar = inject(MatSnackBar);
   authService = inject(AuthService);
+  dialog = inject(MatDialog);
 
   private gridApi?: GridApi;
 
@@ -51,8 +55,8 @@ export class DevicesComponent {
     { field: 'serial', headerName: 'Serial', pinned: 'left' },
     { field: 'model', headerName: 'Model' },
     { field: 'owner', headerName: 'Owner' },
-    { field: 'job', headerName: 'Job' },
-    { field: 'adb', headerName: 'ADB Status' },
+    { field: 'job', headerName: 'Job', cellRenderer: StatusCellRendererComponent },
+    { field: 'adb', headerName: 'ADB Status', cellRenderer: StatusCellRendererComponent },
     { field: 'note', headerName: 'Note', editable: true, cellEditor: 'agTextCellEditor' },
     { field: 'serial_farm', headerName: 'Farm Serial', editable: true },
     { field: 'host', headerName: 'Host' },
@@ -73,17 +77,28 @@ export class DevicesComponent {
     }
   }
 
-  async onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      try {
-        await this.devicesService.importDevices(file);
-        this.snackBar.open('Import successful', 'Close', { duration: 3000 });
-        this.reload();
-      } catch (e) {
-        this.snackBar.open('Import failed', 'Close', { duration: 3000 });
+  openImportDialog() {
+    const dialogRef = this.dialog.open(FileImportDialogComponent, {
+      width: '500px',
+      data: {
+        title: 'Import Devices',
+        accept: '.txt'
+      },
+      panelClass: 'custom-dialog-container',
+      autoFocus: false
+    });
+
+    dialogRef.afterClosed().subscribe(async (file: File | null) => {
+      if (file) {
+        try {
+          await this.devicesService.importDevices(file);
+          this.snackBar.open('Import successful', 'Close', { duration: 3000 });
+          this.reload();
+        } catch (e) {
+          this.snackBar.open('Import failed', 'Close', { duration: 3000 });
+        }
       }
-    }
+    });
   }
 
   onGridReady(params: GridReadyEvent) {

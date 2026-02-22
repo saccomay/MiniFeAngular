@@ -5,10 +5,9 @@
         (onlyMeChange)="onOnlyMeChange($event)" (searchChange)="onSearchChange($event)"
         (clearFilters)="onClearFilters()">
         <div toolbar-actions class="actions">
-            <button mat-flat-button color="primary" (click)="fileInput.click()">
+            <button mat-flat-button color="primary" (click)="openImportDialog()">
                 <mat-icon>upload_file</mat-icon> Import TXT
             </button>
-            <input #fileInput type="file" (change)="onFileSelected($event)" style="display: none" accept=".txt" />
 
             <button mat-stroked-button (click)="deepUpdate()">
                 <mat-icon>update</mat-icon> Deep Update

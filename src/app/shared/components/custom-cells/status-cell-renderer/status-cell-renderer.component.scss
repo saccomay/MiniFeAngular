@@ -38,6 +38,18 @@
     background-color: var(--success-color, #10B981);
 }
 
+/* Info (Blue) */
+.infoTag {
+    background-color: color-mix(in srgb, #3B82F6 15%, transparent);
+    color: color-mix(in srgb, #3B82F6 90%, black);
+    border-color: color-mix(in srgb, #3B82F6 30%, transparent);
+}
+
+.infoCircle {
+    background-color: #3B82F6;
+}
+
+
 /* Inactive (Red) */
 .inactiveTag {
     background-color: color-mix(in srgb, var(--warn-color, #EF4444) 15%, transparent);

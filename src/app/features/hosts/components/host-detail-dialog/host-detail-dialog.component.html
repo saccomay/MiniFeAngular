@@ -95,10 +95,8 @@
                 <div class="upload-section">
                     <div class="section-header">
                         <span class="upload-label">Image Host</span>
-                        <input type="file" #imageHostInput hidden accept="image/*"
-                            (change)="onFileSelected($event, 'host')">
                         <button mat-stroked-button color="primary" type="button" class="small-btn"
-                            (click)="imageHostInput.click()" [disabled]="isUploadingHost()">
+                            (click)="openImageDialog('host')" [disabled]="isUploadingHost()">
                             <mat-spinner diameter="14" *ngIf="isUploadingHost()"></mat-spinner>
                             <mat-icon *ngIf="!isUploadingHost()">upload</mat-icon>
                             <span *ngIf="!isUploadingHost()">Upload</span>
@@ -120,10 +118,8 @@
                 <div class="upload-section mt-4">
                     <div class="section-header">
                         <span class="upload-label">Image Label</span>
-                        <input type="file" #imageLabelInput hidden accept="image/*"
-                            (change)="onFileSelected($event, 'label')">
                         <button mat-stroked-button color="primary" type="button" class="small-btn"
-                            (click)="imageLabelInput.click()" [disabled]="isUploadingLabel()">
+                            (click)="openImageDialog('label')" [disabled]="isUploadingLabel()">
                             <mat-spinner diameter="14" *ngIf="isUploadingLabel()"></mat-spinner>
                             <mat-icon *ngIf="!isUploadingLabel()">upload</mat-icon>
                             <span *ngIf="!isUploadingLabel()">Upload</span>
