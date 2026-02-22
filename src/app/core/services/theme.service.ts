@@ -8,7 +8,7 @@ export class ThemeService {
     private platformId = inject(PLATFORM_ID);
 
     // Signal for current theme
-    readonly theme = signal<'light' | 'dark'>('light');
+    readonly theme = signal<'light' | 'dark'>('dark');
 
     constructor() {
         if (isPlatformBrowser(this.platformId)) {

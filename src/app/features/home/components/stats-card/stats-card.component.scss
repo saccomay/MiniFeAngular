@@ -8,8 +8,17 @@
     position: relative;
     overflow: hidden;
     /* Color is set via inline style: rgb(var(--card-rgb)) */
+
+    // Default Light Background
+    background: linear-gradient(135deg, rgba(var(--card-rgb), 0.20) 0%, rgba(var(--card-rgb), 0.10) 100%);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
     transition: transform 0.2s, box-shadow 0.2s;
+
+    // Dark Background Transparency Override
+    :host-context(.dark-theme) & {
+        background: linear-gradient(135deg, rgba(var(--card-rgb), 0.15) 0%, rgba(var(--card-rgb), 0.05) 100%);
+        border: 1px solid rgba(var(--card-rgb), 0.2);
+    }
 
     &:hover {
         transform: translateY(-4px);

@@ -104,4 +104,34 @@
         border-color: var(--primary-color) !important;
         outline: none !important;
     }
+
+    // --- Dark Theme Transparency Overrides ---
+    :host-context(.dark-theme) &,
+    body.dark-theme & {
+        // Main container needs to be transparent to let the space through
+        background-color: transparent !important;
+
+        // Header
+        .ag-header {
+            background-color: rgba(33, 43, 54, 0.4) !important;
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        // Rows
+        .ag-row {
+            background-color: rgba(22, 28, 36, 0.2) !important;
+            border-color: transparent;
+
+            &:hover {
+                background-color: rgba(33, 43, 54, 0.6) !important;
+                border-color: rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        // Paging Panel
+        .ag-paging-panel {
+            background-color: rgba(22, 28, 36, 0.2) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    }
 }

@@ -53,7 +53,7 @@ html {
 body {
     margin: 0;
     font-family: 'Inter', Roboto, "Helvetica Neue", sans-serif;
-    background-color: var(--bg-color);
+    background-color: transparent; // The app-background-effects handles the base color now
     color: var(--text-color);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

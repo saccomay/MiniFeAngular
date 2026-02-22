@@ -2,6 +2,7 @@
 
 .dashboard-container {
     padding: 20px;
+    background: transparent;
 }
 
 .charts-row {
@@ -22,6 +23,11 @@
     flex: 1;
     min-width: 300px;
     min-height: 400px;
+}
+
+:host-context(.dark-theme) .chart-card {
+    background: rgba(33, 43, 54, 0.2) !important; // More transparent, no blur
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 app-chart-wrapper {

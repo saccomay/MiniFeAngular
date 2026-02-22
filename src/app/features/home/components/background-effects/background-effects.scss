@@ -1,0 +1,154 @@
+@use '../../../../shared/styles/common' as common;
+@use "sass:math";
+@use "sass:string";
+
+.background-container {
+    position: fixed;
+    inset: 0;
+    z-index: -999;
+    pointer-events: none;
+    overflow: hidden;
+
+    // Default (Light Mode) - We'll make it a softer version of the space theme
+    --bg-base-color: #f0f4f8;
+    --glow-primary: radial-gradient(circle at 50% 100%, rgba(130, 80, 223, 0.4) 0%, rgba(130, 80, 223, 0) 50%);
+    --glow-secondary: radial-gradient(circle at 50% 100%, rgba(9, 105, 218, 0.3) 0%, rgba(9, 105, 218, 0) 60%);
+    --star-color: transparent; // No stars in light mode usually, keep it clean
+    transition: background-color 0.5s ease;
+}
+
+:host-context(.dark-theme) .background-container {
+    // Deep Space Dark Mode (Inspired by GitHub Copilot)
+    --bg-base-color: #0b0f19; // Very dark navy/space blue
+    // Bright central glows from the bottom up
+    --glow-primary: radial-gradient(circle at 50% 100%, rgba(163, 113, 247, 0.45) 0%, rgba(163, 113, 247, 0) 60%);
+    --glow-secondary: radial-gradient(circle at 50% 90%, rgba(56, 139, 253, 0.35) 0%, rgba(56, 139, 253, 0) 70%);
+    --star-color: #ffffff;
+}
+
+.bg-base {
+    position: absolute;
+    inset: 0;
+    background-color: var(--bg-base-color);
+    transition: background-color 0.5s ease;
+}
+
+// --- Core Central Glows ---
+.core-glows-container {
+    position: absolute;
+    inset: 0;
+    will-change: transform;
+    transition: transform 0.1s cubic-bezier(0.1, 0.5, 0.1, 1);
+}
+
+.glow {
+    position: absolute;
+    inset: 0;
+    will-change: opacity, transform;
+}
+
+.primary-glow {
+    background: var(--glow-primary);
+    animation: pulseGlow 8s ease-in-out infinite alternate;
+}
+
+.secondary-glow {
+    background: var(--glow-secondary);
+    animation: pulseGlow 12s ease-in-out infinite alternate-reverse;
+}
+
+// --- Starfield ---
+// Function to generate random stars via box-shadow
+@function generate-stars($n) {
+    $value: '#{math.random(2000)}px #{math.random(2000)}px var(--star-color)';
+
+    @for $i from 2 through $n {
+        $value: '#{$value}, #{math.random(2000)}px #{math.random(2000)}px var(--star-color)';
+    }
+
+    @return string.unquote($value);
+}
+
+.stars {
+    position: absolute;
+    top: -1000px;
+    left: -1000px; // Offset to allow moving around without edge cuts
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: transparent;
+    opacity: 0.8;
+    will-change: transform;
+    transition: transform 0.1s cubic-bezier(0.1, 0.5, 0.1, 1);
+}
+
+// Layer 1: lots of tiny, slow-moving stars
+.layer-1 {
+    width: 1px;
+    height: 1px;
+    box-shadow: generate-stars(400);
+    animation: animStar 150s linear infinite;
+}
+
+// Layer 2: medium stars, moving faster
+.layer-2 {
+    width: 2px;
+    height: 2px;
+    opacity: 0.9;
+    box-shadow: generate-stars(150);
+    animation: animStar 100s linear infinite;
+}
+
+// Layer 3: larger stars, moving fastest
+.layer-3 {
+    width: 3px;
+    height: 3px;
+    opacity: 1;
+    box-shadow: generate-stars(50);
+    animation: animStar 50s linear infinite;
+}
+
+// Make sure after the primary shadow, it repeats so it loops seamlessly 
+// (We just use a very long pseudo element repeating the box shadow vertically)
+.stars::after {
+    content: " ";
+    position: absolute;
+    top: 2000px;
+    width: inherit;
+    height: inherit;
+    border-radius: inherit;
+    box-shadow: inherit;
+    background: transparent;
+}
+
+// --- Animations ---
+@keyframes pulseGlow {
+    0% {
+        opacity: 0.7;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes animStar {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(-2000px);
+    }
+}
+
+// --- Accessibility - Reduce Motion ---
+.background-container.reduced-motion {
+
+    .core-glows-container,
+    .stars {
+        transition: none !important;
+        transform: none !important; // Disable parallax
+        animation: none !important;
+    }
+}
