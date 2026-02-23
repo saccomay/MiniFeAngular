@@ -4,8 +4,14 @@
     width: 100%;
     height: 100%;
     background-color: var(--surface-color);
-    padding-top: 50px; // Offset for header pseudo-skeleton or actual header height
+    padding-top: 50px; // Offset for header row
     box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+
+    :host-context(.dark-theme) & {
+        background-color: transparent;
+    }
 }
 
 .skeleton-row {
@@ -17,6 +23,10 @@
     width: 100%;
     box-sizing: border-box;
 
+    :host-context(.dark-theme) & {
+        border-bottom-color: rgba(255, 255, 255, 0.05);
+    }
+
     &.header-row {
         position: absolute;
         top: 0;
@@ -26,6 +36,27 @@
         background-color: var(--bg-color);
         z-index: 1;
         border-bottom: 2px solid var(--border-color);
+
+        :host-context(.dark-theme) & {
+            background-color: rgba(33, 43, 54, 0.4);
+            border-bottom-color: rgba(255, 255, 255, 0.05);
+        }
+    }
+
+    &.footer-row {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 48px;
+        background-color: var(--bg-color);
+        border-top: 1px solid var(--border-color);
+        flex-shrink: 0;
+
+        :host-context(.dark-theme) & {
+            background-color: rgba(22, 28, 36, 0.2);
+            border-top-color: rgba(255, 255, 255, 0.05);
+        }
     }
 }
 

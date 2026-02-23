@@ -1,6 +1,7 @@
 <div class="custom-grid-theme" style="height: 100%; width: 100%;">
     <ag-grid-angular style="height: 100%; width: 100%;" [gridOptions]="gridOptions()" [rowData]="rowData"
-        [columnDefs]="columnDefs" [defaultColDef]="defaultColDef" [pagination]="true" [paginationPageSize]="20"
-        [quickFilterText]="quickFilterText" [rowSelection]="'multiple'" (gridReady)="onGridReady($event)">
+        [columnDefs]="columnDefs" [defaultColDef]="defaultColDef" [pagination]="true" [paginationAutoPageSize]="true"
+        [quickFilterText]="quickFilterText" [rowSelection]="'multiple'" (gridReady)="onGridReady($event)"
+        (rowClicked)="onRowClicked($event)" (cellValueChanged)="onCellValueChanged($event)">
     </ag-grid-angular>
 </div>

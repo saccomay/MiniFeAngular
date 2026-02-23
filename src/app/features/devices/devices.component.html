@@ -9,8 +9,12 @@
                 <mat-icon>upload_file</mat-icon> Import TXT
             </button>
 
+            <button mat-stroked-button (click)="exportSelected()">
+                <mat-icon>download</mat-icon> Export
+            </button>
+
             <button mat-stroked-button (click)="deepUpdate()">
-                <mat-icon>update</mat-icon> Deep Update
+                <mat-icon>update</mat-icon> Deepload
             </button>
 
             <button mat-stroked-button (click)="reload()">
@@ -21,8 +25,6 @@
 
     <div class="grid-container">
         @if (devicesService.devicesResource.isLoading()) {
-        <!-- Using custom skeleton overlay component directly instead of a row wrapper since AG Grid is hidden by default without data if not styled properly, 
-                 or we render the grid and trigger loading API. Instead, we insert the overlay directly during load. -->
         <app-skeleton-loading-overlay></app-skeleton-loading-overlay>
         } @else if (devicesService.devicesResource.error()) {
         <div class="error-container">
@@ -31,7 +33,8 @@
         </div>
         } @else {
         <app-ag-grid-wrapper [rowData]="devicesService.devicesResource.value() || []" [columnDefs]="columnDefs"
-            [quickFilterText]="quickFilterText" (gridReady)="onGridReady($event)">
+            [quickFilterText]="quickFilterText" (gridReady)="onGridReady($event)" (rowClicked)="onRowClicked($event)"
+            (cellValueChanged)="onCellValueChanged($event)">
         </app-ag-grid-wrapper>
         }
     </div>

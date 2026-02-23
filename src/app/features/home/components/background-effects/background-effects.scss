@@ -13,6 +13,7 @@
     --bg-base-color: #f0f4f8;
     --glow-primary: radial-gradient(circle at 50% 100%, rgba(130, 80, 223, 0.4) 0%, rgba(130, 80, 223, 0) 50%);
     --glow-secondary: radial-gradient(circle at 50% 100%, rgba(9, 105, 218, 0.3) 0%, rgba(9, 105, 218, 0) 60%);
+    --glow-tertiary: radial-gradient(circle at 85% 95%, rgba(130, 80, 223, 0.25) 0%, rgba(130, 80, 223, 0) 55%);
     --star-color: transparent; // No stars in light mode usually, keep it clean
     transition: background-color 0.5s ease;
 }
@@ -23,6 +24,7 @@
     // Bright central glows from the bottom up
     --glow-primary: radial-gradient(circle at 50% 100%, rgba(163, 113, 247, 0.45) 0%, rgba(163, 113, 247, 0) 60%);
     --glow-secondary: radial-gradient(circle at 50% 90%, rgba(56, 139, 253, 0.35) 0%, rgba(56, 139, 253, 0) 70%);
+    --glow-tertiary: radial-gradient(circle at 85% 95%, rgba(163, 113, 247, 0.3) 0%, rgba(163, 113, 247, 0) 65%); // Harmonious purple on the right
     --star-color: #ffffff;
 }
 
@@ -57,13 +59,18 @@
     animation: pulseGlow 12s ease-in-out infinite alternate-reverse;
 }
 
+.tertiary-glow {
+    background: var(--glow-tertiary);
+    animation: pulseGlow 10s ease-in-out infinite alternate;
+}
+
 // --- Starfield ---
 // Function to generate random stars via box-shadow
 @function generate-stars($n) {
-    $value: '#{math.random(2000)}px #{math.random(2000)}px var(--star-color)';
+    $value: '#{math.random(4000)}px #{math.random(2000)}px var(--star-color)';
 
     @for $i from 2 through $n {
-        $value: '#{$value}, #{math.random(2000)}px #{math.random(2000)}px var(--star-color)';
+        $value: '#{$value}, #{math.random(4000)}px #{math.random(2000)}px var(--star-color)';
     }
 
     @return string.unquote($value);

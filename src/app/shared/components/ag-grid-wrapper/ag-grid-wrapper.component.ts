@@ -1,6 +1,6 @@
-import { Component, Input, Output, EventEmitter, effect, inject, viewChild, computed } from '@angular/core';
+import { Component, Input, Output, EventEmitter, effect, inject, computed } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
-import { ColDef, GridOptions, GridReadyEvent, ModuleRegistry, themeQuartz, colorSchemeDark } from 'ag-grid-community'; // Verify imports
+import { ColDef, GridOptions, GridReadyEvent, themeQuartz, colorSchemeDark, RowClickedEvent, CellValueChangedEvent } from 'ag-grid-community';
 import { ThemeService } from '../../../core/services/theme.service';
 import { SkeletonLoadingOverlay } from '../custom-cells/skeleton-loading-overlay/skeleton-loading-overlay';
 
@@ -19,6 +19,8 @@ export class AgGridWrapperComponent {
   @Input() fitColumns: boolean = true;
   @Input() quickFilterText: string = '';
   @Output() gridReady = new EventEmitter<GridReadyEvent>();
+  @Output() rowClicked = new EventEmitter<RowClickedEvent>();
+  @Output() cellValueChanged = new EventEmitter<CellValueChangedEvent>();
 
   get defaultColDef(): ColDef {
     return {
@@ -27,7 +29,7 @@ export class AgGridWrapperComponent {
       resizable: true,
       flex: this.fitColumns ? 1 : 0,
       width: this.fitColumns ? undefined : 150,
-      minWidth: 100
+      minWidth: 130
     };
   }
 
@@ -38,7 +40,9 @@ export class AgGridWrapperComponent {
     const isDark = this.themeService.theme() === 'dark';
     return {
       theme: isDark ? themeQuartz.withPart(colorSchemeDark) : themeQuartz,
-      loadingOverlayComponent: SkeletonLoadingOverlay
+      loadingOverlayComponent: SkeletonLoadingOverlay,
+      enterNavigatesVertically: true,
+      enterNavigatesVerticallyAfterEdit: true,
     };
   });
 
@@ -62,5 +66,13 @@ export class AgGridWrapperComponent {
       this.gridApi.sizeColumnsToFit();
     }
     this.gridReady.emit(params);
+  }
+
+  onRowClicked(event: RowClickedEvent) {
+    this.rowClicked.emit(event);
+  }
+
+  onCellValueChanged(event: CellValueChangedEvent) {
+    this.cellValueChanged.emit(event);
   }
 }

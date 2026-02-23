@@ -26,6 +26,12 @@
     background-color: var(--surface-color);
     border: 1px solid var(--border-color);
     color: var(--text-color);
+
+    :host-context(.dark-theme) &,
+    body.dark-theme & {
+        background-color: rgba(33, 43, 54, 0.4);
+        border-color: rgba(255, 255, 255, 0.05);
+    }
 }
 
 .tabButton {
@@ -131,6 +137,16 @@
 
         &::placeholder {
             color: var(--text-secondary);
+        }
+
+        :host-context(.dark-theme) &,
+        body.dark-theme & {
+            background-color: rgba(33, 43, 54, 0.4);
+            border-color: rgba(255, 255, 255, 0.05);
+
+            &:focus {
+                background-color: rgba(33, 43, 54, 0.6);
+            }
         }
     }
 }

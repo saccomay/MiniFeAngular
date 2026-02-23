@@ -62,7 +62,12 @@ export class DevicesService {
                 }));
                 return firstValueFrom(of(mockData).pipe(delay(700)));
             } else {
-                return firstValueFrom(this.http.get<Device[]>(`${environment.apiUrl}/mini/devices_mini/list`));
+                // filter={}&projection={} encoded
+                return firstValueFrom(
+                    this.http.get<Device[]>(
+                        `${environment.apiUrl}/mini/devices_mini/list/filter=%7B%7D&projection=%7B%7D`
+                    )
+                );
             }
         }
     });
@@ -72,7 +77,14 @@ export class DevicesService {
             await firstValueFrom(of(true).pipe(delay(300)));
             return true;
         } else {
-            return firstValueFrom(this.http.put(`${environment.apiUrl}/mini/devices_mini/update/filter={"serial":"${serial}"}`, data));
+            // filter={"serial":"${serial}"} properly encoded
+            const filterEncoded = encodeURIComponent(`{"serial":"${serial}"}`);
+            return firstValueFrom(
+                this.http.put(
+                    `${environment.apiUrl}/mini/devices_mini/update/filter=${filterEncoded}`,
+                    data
+                )
+            );
         }
     }
 
@@ -85,15 +97,24 @@ export class DevicesService {
         }
     }
 
+    /**
+     * Upload device data from a TXT file.
+     * The file content is used as the knoxid data sent via query param.
+     */
     async importDevices(file: File) {
         if (environment.useMock) {
             await firstValueFrom(of(true).pipe(delay(1000)));
             return true;
         } else {
+            const knoxidData = await file.text();
             const formData = new FormData();
             formData.append('file', file);
-            // Assuming knoxid is handled or appended
-            return firstValueFrom(this.http.post(`${environment.apiUrl}/mini/devices_mini/upload/knoxid=mock`, formData));
+            return firstValueFrom(
+                this.http.post(
+                    `${environment.apiUrl}/mini/devices_mini/upload/knoxid=${encodeURIComponent(knoxidData)}`,
+                    formData
+                )
+            );
         }
     }
 }

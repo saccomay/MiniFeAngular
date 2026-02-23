@@ -108,30 +108,36 @@
     // --- Dark Theme Transparency Overrides ---
     :host-context(.dark-theme) &,
     body.dark-theme & {
-        // Main container needs to be transparent to let the space through
-        background-color: transparent !important;
+
+        // The Quartz theme sets background directly on the root wrapper, we must force it to transparent
+        .ag-root-wrapper,
+        .ag-root-wrapper-body,
+        .ag-body,
+        .ag-body-viewport {
+            background-color: transparent !important;
+        }
 
         // Header
         .ag-header {
             background-color: rgba(33, 43, 54, 0.4) !important;
-            border-color: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
         }
 
         // Rows
         .ag-row {
             background-color: rgba(22, 28, 36, 0.2) !important;
-            border-color: transparent;
+            border-color: transparent !important;
 
             &:hover {
                 background-color: rgba(33, 43, 54, 0.6) !important;
-                border-color: rgba(255, 255, 255, 0.1);
+                border-color: rgba(255, 255, 255, 0.1) !important;
             }
         }
 
         // Paging Panel
         .ag-paging-panel {
             background-color: rgba(22, 28, 36, 0.2) !important;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
         }
     }
 }
