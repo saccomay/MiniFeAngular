@@ -31,6 +31,7 @@ export class StatusCellRendererComponent implements ICellRendererAngularComp {
         'online': 'active',
         'success': 'active',
         'in use': 'active',
+        'valid': 'active', // added for Approvals
 
         // Blue / Info variants
         'running': 'info',         // devices: job = Running (blue #3B82F6)
@@ -43,6 +44,7 @@ export class StatusCellRendererComponent implements ICellRendererAngularComp {
         'failed': 'inactive',
         'adb-not-found': 'inactive',  // devices: adb not found
         'not found': 'inactive',
+        'expired': 'inactive', // added for Approvals
 
         // Orange / Warning variants
         'needs maintenance': 'warning',
@@ -50,6 +52,8 @@ export class StatusCellRendererComponent implements ICellRendererAngularComp {
         'on hold': 'warning',
         'audit': 'warning',        // devices: device in audit state (#F59E0B)
         'pending': 'warning',      // problems: status = Pending (#F59E0B)
+        'warning': 'warning',      // added for Approvals
+        'expiringsoon': 'warning', // fallthrough for Approvals
 
         // Gray / Default variants
         'investigating': 'pending',

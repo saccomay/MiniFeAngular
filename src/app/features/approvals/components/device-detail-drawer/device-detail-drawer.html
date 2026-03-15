@@ -1,0 +1,104 @@
+<div class="drawer-header">
+    <div class="title-area">
+        <mat-icon class="entity-type-icon">{{ getTypeIcon(summary?.entityType || '') }}</mat-icon>
+        <div>
+            <h3>{{ summary?.entityId }}</h3>
+            <span class="subtitle">{{ summary?.entityType }} details</span>
+        </div>
+    </div>
+    <button mat-icon-button (click)="closeDrawer.emit()">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+
+<div class="drawer-content">
+    @if(summary) {
+    <div class="status-banner" [ngClass]="summary.status.toLowerCase()">
+        <mat-icon>
+            {{ summary.status === 'Valid' ? 'check_circle' : (summary.status === 'Expired' ? 'error' : 'warning') }}
+        </mat-icon>
+        Status: {{ summary.status }}
+    </div>
+
+    @if(summary.hasEscort) {
+    <div class="info-section">
+        <h4><mat-icon>shield</mat-icon> Escort Permission</h4>
+        <div class="info-card check">
+            <p><strong>Valid Until:</strong> {{ summary.escortExpiry }}</p>
+            <p class="desc">PC is registered for Internet Access Escort.</p>
+        </div>
+    </div>
+    }
+
+    @if(summary.proxyForAll || summary.proxyGroups?.length) {
+    <div class="info-section">
+        <h4><mat-icon>public</mat-icon> Proxy Config</h4>
+
+        @if(summary.proxyForAll) {
+        <div class="info-card warning">
+            <p><strong>Proxy For All Target</strong></p>
+            <p class="desc">Expiry: <span [class]="summary.proxyForAll.isExpired ? 'text-error' : 'text-valid'">{{
+                    summary.proxyForAll.expiryDate }}</span></p>
+        </div>
+        }
+
+        @if(summary.proxyGroups?.length) {
+        @for(group of summary.proxyGroups; track $index) {
+        <div class="info-card" style="margin-top: 8px;">
+            <p><strong>Expiry:</strong> <span [class]="group.isExpired ? 'text-error' : 'text-valid'">{{
+                    group.expiryDate }}</span></p>
+            <div class="chips-container" style="margin-top: 8px;">
+                @for (target of group.targets; track target) {
+                <span class="chip dest-chip">{{target}}</span>
+                }
+            </div>
+        </div>
+        }
+        }
+    </div>
+    }
+
+    @if(summary.inSystemIds?.length) {
+    <div class="info-section">
+        <h4><mat-icon>group</mat-icon> System IDs</h4>
+        <div class="chips-container">
+            @for(sysId of summary.inSystemIds; track sysId) {
+            <span class="chip system-chip">{{ sysId }}</span>
+            }
+        </div>
+    </div>
+    }
+
+    @if(summary.firewallGroups?.length) {
+    <div class="info-section">
+        <h4><mat-icon>security</mat-icon> Firewall Profiles</h4>
+
+        @for(group of summary.firewallGroups; track $index) {
+        <div class="info-card" style="margin-top: 8px;">
+            <p><strong>Expiry:</strong> <span [class]="group.isExpired ? 'text-error' : 'text-valid'">{{
+                    group.expiryDate }}</span></p>
+            <div class="chips-container" style="margin-top: 8px;">
+                @for (rule of group.rules; track $index) {
+                <span class="chip" [class.dest-chip]="rule.direction === 'Out'" [class.src-chip]="rule.direction === 'In'">
+                    {{rule.direction}}: {{rule.peer}}:{{rule.port}} [{{rule.protocol}}]
+                </span>
+                }
+            </div>
+        </div>
+        }
+    </div>
+    }
+
+    <div class="info-section">
+        <h4><mat-icon>assignment</mat-icon> Related Requests ({{ summary.relatedRequests.length }})</h4>
+        <div class="request-list">
+            @for(reqId of summary.relatedRequests; track reqId) {
+            <div class="request-item" (click)="openRequestDetails(reqId)">
+                <span>{{ reqId }}</span>
+                <mat-icon>open_in_new</mat-icon>
+            </div>
+            }
+        </div>
+    </div>
+    }
+</div>

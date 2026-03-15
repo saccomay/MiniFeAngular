@@ -1,0 +1,276 @@
+.page-container {
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.grid-container {
+    position: relative; // crucial: contain the absolute drawer within the grid
+
+    .drawer-container {
+        position: absolute;
+        top: 0;
+        right: -400px;
+        width: 400px;
+        height: 100%;
+        background: var(--surface-color);
+        border-left: 1px solid var(--border-color);
+        box-shadow: -4px 0 16px rgba(0, 0, 0, 0.5);
+        transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 100; // ensure it covers the ag-grid content
+
+        &.open {
+            right: 0;
+        }
+    }
+
+    // Custom cell styling specific to the approvals table
+    ::ng-deep {
+
+        /* Cell Specifics for AG-Grid */
+        .entity-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            height: 100%;
+
+            .entity-icon {
+                color: var(--text-secondary);
+                background: var(--surface-hover);
+                padding: 8px;
+                border-radius: 8px;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                &.is-account {
+                    color: #7B61FF;
+                    background: rgba(123, 97, 255, 0.1);
+                }
+
+                &.is-ap {
+                    color: #00B8D9;
+                    background: rgba(0, 184, 217, 0.1);
+                }
+            }
+
+            .entity-info {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                line-height: 1.2;
+
+                .entity-id {
+                    font-weight: 500;
+                    font-size: 14px;
+                    color: var(--text-primary);
+                }
+
+                .entity-type {
+                    font-size: 12px;
+                    color: var(--text-secondary);
+                }
+            }
+        }
+
+        .empty-text {
+            color: var(--text-disabled);
+            font-style: italic;
+        }
+
+        .info-cell,
+        .escort-info,
+        .systemid-info {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            height: 100%;
+            gap: 6px;
+
+            .expiry-text,
+            span {
+                color: var(--text-secondary);
+            }
+        }
+
+        .success-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+            color: var(--success-color, #22C55E);
+        }
+
+        .warning-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+            color: #FF9800;
+        }
+
+        .firewall-info,
+        .proxy-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 6px;
+            padding: 12px 0;
+
+            .fw-item,
+            .proxy-item {
+                display: flex;
+                align-items: flex-start;
+                gap: 6px;
+                font-size: 13px;
+                color: var(--text-primary);
+                line-height: 1.4;
+                word-break: break-all; // Force long URLs to wrap
+                padding: 6px 10px;
+                border-radius: 6px;
+                background: rgba(145, 158, 171, 0.08);
+
+                &.valid {
+                    background: rgba(34, 197, 94, 0.08); // Success green tint
+                }
+
+                &.expired {
+                    background: rgba(255, 86, 48, 0.08); // Error red tint
+                }
+
+                mat-icon {
+                    font-size: 16px;
+                    width: 16px;
+                    height: 16px;
+                    flex-shrink: 0; // Prevent icon shrinking on multi-line text
+                    margin-top: 2px; // Align icon visually with top line of text
+                }
+
+                &.expiry mat-icon {
+                    color: #FFAB00;
+                }
+
+                &.dest mat-icon {
+                    color: #1890FF;
+                }
+
+                &.src mat-icon {
+                    color: #22C55E;
+                }
+
+                &.warning {
+                    color: #FF9800;
+                    background: rgba(255, 152, 0, 0.08);
+
+                    mat-icon {
+                        color: #FF9800;
+                    }
+                }
+            }
+        }
+    }
+
+    .permissions-info {
+        display: flex;
+        align-items: center;
+        height: 100%;
+
+        .perm-count {
+            font-weight: 600;
+            color: var(--text-primary);
+            background: var(--surface-hover);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+    }
+
+    .action-btn {
+        background: transparent;
+        border: none;
+        color: var(--primary-color);
+        cursor: pointer;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+
+        &:hover {
+            background: rgba(24, 144, 255, 0.1);
+            border-radius: 50%;
+        }
+    }
+
+    /* Status Chip styling */
+    .status-chip {
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+
+        &.valid {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22C55E;
+        }
+
+        &.warning,
+        &.expiringsoon {
+            background: rgba(255, 171, 0, 0.1);
+            color: #FFAB00;
+        }
+
+        &.expired {
+            background: rgba(255, 86, 48, 0.1);
+            color: #FF5630;
+        }
+    }
+}
+
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    color: var(--text-secondary);
+    gap: 16px;
+}
+
+// When the drawer is open, we need to shift the grid's layout
+// so it doesn't get hidden behind the drawer.
+.grid-container {
+    transition: padding-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:host-context(.drawer-open) .grid-container,
+.drawer-open .grid-container,
+.grid-container:has(.drawer-container.open) {
+    padding-right: 400px;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    color: var(--text-secondary);
+
+    mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+
+    p {
+        font-size: 16px;
+        margin: 0;
+    }
+}

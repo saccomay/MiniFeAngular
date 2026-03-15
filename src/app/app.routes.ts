@@ -38,6 +38,10 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/task-history/task-history.component').then(m => m.TaskHistoryComponent)
             },
             {
+                path: 'approvals',
+                loadComponent: () => import('./features/approvals/approvals').then(m => m.ApprovalsComponent)
+            },
+            {
                 path: 'logout',
                 loadComponent: () => import('./features/auth/login/login.component').then(m => {
                     // Hacky reset or just redirect in component init if logic needed, 

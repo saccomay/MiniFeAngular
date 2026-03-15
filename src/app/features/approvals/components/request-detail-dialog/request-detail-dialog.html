@@ -1,0 +1,101 @@
+<div class="dialog-header">
+    <div class="title-area">
+        <mat-icon class="header-icon">assignment</mat-icon>
+        <div>
+            <h2 mat-dialog-title>{{ request.id }}</h2>
+            <span class="subtitle">Request Details</span>
+        </div>
+    </div>
+    <button mat-icon-button class="close-btn" (click)="close()">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+
+<mat-dialog-content class="modern-dialog-content">
+
+    <div class="meta-section">
+        <div class="meta-row">
+            <span class="label">Requester:</span>
+            <span class="value">{{ request.requester || 'N/A' }}</span>
+        </div>
+        <div class="meta-row">
+            <span class="label">Reason:</span>
+            <span class="value">{{ request.reason || 'No reason provided' }}</span>
+        </div>
+        @if(request.approvers?.length) {
+        <div class="meta-row">
+            <span class="label">Approvers:</span>
+            <span class="value">{{ request.approvers?.join(', ') }}</span>
+        </div>
+        }
+    </div>
+
+    <mat-divider class="divider"></mat-divider>
+
+    <h3 class="section-title">Permissions ({{ request.permissions.length }})</h3>
+
+    <div class="permissions-list">
+        @for(perm of request.permissions; track perm.type) {
+        <div class="permission-card">
+            <div class="perm-header">
+                <span class="perm-type">{{ perm.type }}</span>
+                @if(perm.expireDate) {
+                <span class="perm-expiry">Expires: {{ perm.expireDate }}</span>
+                }
+            </div>
+
+            <div class="perm-body">
+                @if(perm.type === 'SystemID') {
+                <p><strong>System ID:</strong> {{ perm['systemId'] }}</p>
+                <p><strong>Users:</strong> {{ perm['users']?.join(', ') }}</p>
+                <p><strong>IPs:</strong> {{ perm['ips']?.join(', ') }}</p>
+                }
+                @if(perm.type === 'Firewall') {
+                <p><strong>Period:</strong> {{ perm['period'] }}</p>
+                <ul class="rules-list">
+                    @for(rule of perm['rules']; track rule.destination) {
+                    <li>{{ rule.source }} &rarr; {{ rule.destination }}:{{ rule.port }} ({{ rule.category }})</li>
+                    }
+                </ul>
+                }
+                @if(perm.type === 'Escort') {
+                <ul class="rules-list">
+                    @for(item of perm['items']; track item.ipAddress) {
+                    <li>{{ item.ipAddress }} - {{ item.macAddress }} (Valid: {{ item.requestPeriod }})</li>
+                    }
+                </ul>
+                }
+                @if(perm.type === 'Proxy') {
+                <p><strong>Source IP:</strong> {{ perm['ipAddress'] }}</p>
+                <p><strong>Target:</strong> {{ perm['targetIp'] }}</p>
+                }
+                @if(perm.type === 'ProxyForAll') {
+                <p><strong>Source IP:</strong> {{ perm['ipAddress'] }}</p>
+                <p><strong>Access:</strong> Global Proxy for All Destinations</p>
+                }
+                @if(perm.type === 'SuperUser') {
+                <p><strong>Account:</strong> {{ perm['userAccount'] }}</p>
+                <p><strong>QuickBuild:</strong> {{ perm['quickBuild'] }}</p>
+                <p><strong>Access Type:</strong> {{ perm['accessType'] }}</p>
+                }
+                @if(perm.type === 'RestApi') {
+                <p><strong>Account:</strong> {{ perm['user'] }}</p>
+                <p><strong>QuickBuild:</strong> {{ perm['quickBuild'] }}</p>
+                <p><strong>CMD:</strong> {{ perm['cmdAndFrequency'] }}</p>
+                }
+            </div>
+        </div>
+        }
+    </div>
+
+</mat-dialog-content>
+
+<div class="dialog-actions">
+    @if(request.originalFileUrl) {
+    <button mat-stroked-button color="primary" class="view-file-btn" (click)="openOriginalFile()">
+        <mat-icon>visibility</mat-icon> View Original File
+    </button>
+    }
+    <span class="spacer" style="flex:1"></span>
+    <button mat-button (click)="close()">Close</button>
+</div>

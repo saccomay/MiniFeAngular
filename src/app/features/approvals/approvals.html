@@ -1,0 +1,33 @@
+<div class="page-container">
+
+    <app-table-toolbar [tabs]="tabs" [activeTab]="activeTab" [showOnlyMeToggle]="false"
+        [searchText]="quickFilterText" [activeFilterCount]="activeFilterCount" (tabChange)="onTabChange($event)"
+        (searchChange)="onSearchChange($event)"
+        (clearFilters)="onClearFilters()">
+        <div toolbar-actions class="actions">
+            <button mat-flat-button color="primary" class="import-btn" (click)="openImportDialog()">
+                <mat-icon>upload_file</mat-icon>
+                Import Approvals
+            </button>
+            <button mat-stroked-button (click)="reload()">
+                <mat-icon>refresh</mat-icon> Reload
+            </button>
+        </div>
+    </app-table-toolbar>
+
+    <div class="grid-container">
+        @if (loading) {
+            <app-skeleton-loading-overlay></app-skeleton-loading-overlay>
+        } @else {
+            <app-ag-grid-wrapper [rowData]="filteredSummaries" [columnDefs]="colDefs" [quickFilterText]="quickFilterText"
+                (gridReady)="onGridReady($event)" (rowClicked)="onRowClicked($event)">
+            </app-ag-grid-wrapper>
+        }
+
+        <!-- Side Drawer -->
+        <div class="drawer-container" [class.open]="drawerOpen">
+            <app-device-detail-drawer [summary]="selectedDevice" (closeDrawer)="closeDrawer()">
+            </app-device-detail-drawer>
+        </div>
+    </div>
+</div>
