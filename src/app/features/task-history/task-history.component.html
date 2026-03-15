@@ -5,21 +5,33 @@
         (onlyMeChange)="onOnlyMeChange($event)" (searchChange)="onSearchChange($event)"
         (clearFilters)="onClearFilters()">
         <div toolbar-actions class="actions">
+
             <button mat-stroked-button (click)="deepUpdate()">
-                <mat-icon>update</mat-icon> Deep Update
+                <mat-icon>cloud_sync</mat-icon> Deep Update
             </button>
 
             <button mat-stroked-button (click)="deepInsert()">
-                <mat-icon>add</mat-icon> Deep Insert
+                <mat-icon>cloud_upload</mat-icon> Deep Insert
             </button>
 
-            <button mat-stroked-button (click)="downloadSnapshot()">
-                <mat-icon>download</mat-icon> Snapshot
+            <button mat-stroked-button (click)="exportCsv()" [disabled]="(taskHistoryService.historyResource.value()?.length ?? 0) === 0">
+                <mat-icon>file_download</mat-icon>
+                Export{{ selectedRows.length > 0 ? ' (' + selectedRows.length + ')' : '' }}
+            </button>
+
+            <button mat-stroked-button disabled>
+                <mat-icon>file_upload</mat-icon> Import
             </button>
 
             <button mat-stroked-button (click)="reload()">
                 <mat-icon>refresh</mat-icon> Reload
             </button>
+
+            <button mat-stroked-button (click)="toggleDomainsBlockedFilter()"
+                [class.active-filter-btn]="domainsBlockedFilterActive">
+                <mat-icon>block</mat-icon> Domains Blocked
+            </button>
+
         </div>
     </app-table-toolbar>
 
@@ -28,31 +40,52 @@
         <app-skeleton-loading-overlay></app-skeleton-loading-overlay>
         } @else if (taskHistoryService.historyResource.error()) {
         <div class="error-container">
-            Error loading history.
+            Error loading task history.
             <button mat-button (click)="reload()">Retry</button>
         </div>
         } @else {
-        <app-ag-grid-wrapper [rowData]="taskHistoryService.historyResource.value() || []" [columnDefs]="columnDefs"
-            [quickFilterText]="quickFilterText" (gridReady)="onGridReady($event)">
+        <app-ag-grid-wrapper
+            [rowData]="taskHistoryService.historyResource.value() || []"
+            [columnDefs]="columnDefs"
+            [quickFilterText]="quickFilterText"
+            [isExternalFilterPresent]="isExternalFilterPresent"
+            [doesExternalFilterPass]="doesExternalFilterPass"
+            (gridReady)="onGridReady($event)"
+            (selectionChanged)="onSelectionChanged($event)">
         </app-ag-grid-wrapper>
         }
     </div>
 </div>
 
+<!-- Domains Blocked Dialog Template -->
 <ng-template #domainsDialog let-data>
-    <h2 mat-dialog-title>Blocked Domains</h2>
-    <mat-dialog-content>
-        @if (data.domains && data.domains.length > 0) {
-        <ul class="domain-list">
-            @for (domain of data.domains; track domain) {
-            <li>{{ domain }}</li>
-            }
-        </ul>
-        } @else {
-        <p>No blocked domains.</p>
-        }
+    <div class="domains-dialog-header">
+        <h2 mat-dialog-title>Blocked Domains</h2>
+    </div>
+
+    <mat-dialog-content class="domains-dialog-content">
+        <app-ag-grid-wrapper
+            [rowData]="data.domainRows"
+            [columnDefs]="domainColumnDefs"
+            [fitColumns]="true"
+            (gridReady)="onDomainsGridReady($event)"
+            (selectionChanged)="onDomainSelectionChanged($event)"
+            style="height: 320px; display: block;">
+        </app-ag-grid-wrapper>
     </mat-dialog-content>
-    <mat-dialog-actions align="end">
-        <button mat-button mat-dialog-close>Close</button>
+
+    <mat-dialog-actions class="domains-dialog-actions">
+        <button mat-stroked-button (click)="downloadSnapshot()">
+            <mat-icon>photo_camera</mat-icon> Snapshots
+        </button>
+        <div class="actions-right">
+            <button mat-button mat-dialog-close>Cancel</button>
+            <button mat-raised-button color="primary"
+                [disabled]="selectedDomainRows.length === 0"
+                (click)="allowDomains()">
+                <mat-icon>check_circle</mat-icon>
+                Allow{{ selectedDomainRows.length > 0 ? ' (' + selectedDomainRows.length + ')' : '' }}
+            </button>
+        </div>
     </mat-dialog-actions>
 </ng-template>

@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, effect, inject, computed } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
-import { ColDef, GridOptions, GridReadyEvent, themeQuartz, colorSchemeDark, RowClickedEvent, CellValueChangedEvent } from 'ag-grid-community';
+import { ColDef, GridOptions, GridReadyEvent, themeQuartz, colorSchemeDark, RowClickedEvent, CellValueChangedEvent, SelectionChangedEvent } from 'ag-grid-community';
 import { ThemeService } from '../../../core/services/theme.service';
 import { SkeletonLoadingOverlay } from '../custom-cells/skeleton-loading-overlay/skeleton-loading-overlay';
 
@@ -18,9 +18,12 @@ export class AgGridWrapperComponent {
   @Input() columnDefs: ColDef[] = [];
   @Input() fitColumns: boolean = true;
   @Input() quickFilterText: string = '';
+  @Input() isExternalFilterPresent?: () => boolean;
+  @Input() doesExternalFilterPass?: (node: any) => boolean;
   @Output() gridReady = new EventEmitter<GridReadyEvent>();
   @Output() rowClicked = new EventEmitter<RowClickedEvent>();
   @Output() cellValueChanged = new EventEmitter<CellValueChangedEvent>();
+  @Output() selectionChanged = new EventEmitter<SelectionChangedEvent>();
 
   get defaultColDef(): ColDef {
     return {
@@ -74,5 +77,9 @@ export class AgGridWrapperComponent {
 
   onCellValueChanged(event: CellValueChangedEvent) {
     this.cellValueChanged.emit(event);
+  }
+
+  onSelectionChanged(event: SelectionChangedEvent) {
+    this.selectionChanged.emit(event);
   }
 }

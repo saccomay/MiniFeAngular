@@ -1,4 +1,47 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
 
+// Active filter button state (used for Domains Blocked toggle)
+:host ::ng-deep .active-filter-btn {
+  background-color: rgba(99, 102, 241, 0.12) !important;
+  border-color: #6366f1 !important;
+  color: #6366f1 !important;
+
+  mat-icon {
+    color: #6366f1 !important;
+  }
+}
+
 // Styles are now inherited from shared/styles/table-page.scss
+
+// Domains Dialog Styles
+:host ::ng-deep {
+  .domains-dialog-header {
+    padding: 16px 24px 0;
+
+    h2[mat-dialog-title] {
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  .domains-dialog-content {
+    padding: 12px 24px !important;
+    overflow: hidden !important;
+    min-height: 340px;
+  }
+
+  .domains-dialog-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 24px 16px;
+    gap: 8px;
+
+    .actions-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+}

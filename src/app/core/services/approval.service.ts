@@ -162,6 +162,31 @@ export class ApprovalService {
                     ]
                 }
             ]
+        },
+        {
+            id: 'REQ-2025-009',
+            requester: 'User G',
+            reason: 'System Admin Access for Server Management',
+            approvers: ['Manager D'],
+            expiryNotification: ['User A', 'User B', 'User C'],
+            permissions: [
+                {
+                    type: 'SuperUser',
+                    expireDate: '2026-10-08',
+                    purpose: 'Perform critical system updates',
+                    userAccount: 'abc.srv',
+                    quickBuild: 'Android QuickBuild',
+                    accessType: 'download for all'
+                },
+                {
+                    type: 'RestApi',
+                    expireDate: '2026-10-08',
+                    user: 'abc.srv',
+                    quickBuild: 'CP QuickBuild',
+                    reason: 'Automated status reporting',
+                    cmdAndFrequency: 'curl -X GET /status (Every 5 mins)'
+                }
+            ]
         }
     ];
 
@@ -179,6 +204,8 @@ export class ApprovalService {
                     relatedRequests: [],
                     firewallGroups: [],
                     proxyGroups: [],
+                    superUserPermissions: [],
+                    restApiPermissions: [],
                     inSystemIds: []
                 });
             }
@@ -205,12 +232,42 @@ export class ApprovalService {
                 if (perm.type === 'SuperUser') {
                     const acc = getOrInit(perm.userAccount, 'Account');
                     acc.totalPermissions++;
+                    
+                    const expiryDate = perm.expireDate || 'Unknown';
+                    const isExpired = new Date(expiryDate) < new Date();
+
+                    acc.superUserPermissions!.push({
+                        expiryDate,
+                        isExpired,
+                        userAccount: perm.userAccount,
+                        quickBuild: perm.quickBuild,
+                        accessType: perm.accessType,
+                        purpose: perm.purpose,
+                        approvers: req.approvers,
+                        expiryNotification: req.expiryNotification
+                    });
+
                     if (!acc.relatedRequests.includes(req.id)) acc.relatedRequests.push(req.id);
                 }
 
                 if (perm.type === 'RestApi') {
                     const acc = getOrInit(perm.user, 'Account');
                     acc.totalPermissions++;
+
+                    const expiryDate = perm.expireDate || 'Unknown';
+                    const isExpired = new Date(expiryDate) < new Date();
+
+                    acc.restApiPermissions!.push({
+                        expiryDate,
+                        isExpired,
+                        user: perm.user,
+                        quickBuild: perm.quickBuild,
+                        reason: perm.reason,
+                        cmdAndFrequency: perm.cmdAndFrequency,
+                        approvers: req.approvers,
+                        expiryNotification: req.expiryNotification
+                    });
+
                     if (!acc.relatedRequests.includes(req.id)) acc.relatedRequests.push(req.id);
                 }
 
@@ -315,6 +372,8 @@ export class ApprovalService {
 
             summary.firewallGroups?.forEach(g => checkExpiry(g.expiryDate, g.isExpired));
             summary.proxyGroups?.forEach(g => checkExpiry(g.expiryDate, g.isExpired));
+            summary.superUserPermissions?.forEach(p => checkExpiry(p.expiryDate, p.isExpired));
+            summary.restApiPermissions?.forEach(p => checkExpiry(p.expiryDate, p.isExpired));
 
             if (hasExpired) {
                 summary.status = 'Expired';

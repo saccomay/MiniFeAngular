@@ -69,6 +69,64 @@
     </div>
     }
 
+    @if(summary.superUserPermissions?.length) {
+    <div class="info-section">
+        <h4><mat-icon>admin_panel_settings</mat-icon> Super User Access</h4>
+        
+        @for(sup of summary.superUserPermissions; track $index) {
+        <div class="info-card" style="margin-top: 8px;">
+            <p><strong>Expiry:</strong> <span [class]="sup.isExpired ? 'text-error' : 'text-valid'">{{ sup.expiryDate }}</span></p>
+            <p><strong>QuickBuild:</strong> {{ sup.quickBuild }}</p>
+            <p><strong>Access Type:</strong> {{ sup.accessType }}</p>
+            <p *ngIf="sup.purpose"><strong>Purpose:</strong> {{ sup.purpose }}</p>
+            
+            <ng-container *ngIf="sup.approvers?.length">
+                <p style="margin-top: 4px;"><strong>Approvers:</strong></p>
+                <ul class="detail-list">
+                    <li *ngFor="let approver of sup.approvers">{{ approver }}</li>
+                </ul>
+            </ng-container>
+
+            <ng-container *ngIf="sup.expiryNotification?.length">
+                <p style="margin-top: 4px;"><strong>Notify Expiry:</strong></p>
+                <div class="chips-container" style="margin-top: 4px;">
+                    <span class="chip dest-chip" *ngFor="let notify of sup.expiryNotification">{{ notify }}</span>
+                </div>
+            </ng-container>
+        </div>
+        }
+    </div>
+    }
+
+    @if(summary.restApiPermissions?.length) {
+    <div class="info-section">
+        <h4><mat-icon>api</mat-icon> REST API Access</h4>
+        
+        @for(api of summary.restApiPermissions; track $index) {
+        <div class="info-card" style="margin-top: 8px;">
+            <p><strong>Expiry:</strong> <span [class]="api.isExpired ? 'text-error' : 'text-valid'">{{ api.expiryDate }}</span></p>
+            <p><strong>QuickBuild:</strong> {{ api.quickBuild }}</p>
+            <p *ngIf="api.reason"><strong>Reason:</strong> {{ api.reason }}</p>
+            <p *ngIf="api.cmdAndFrequency"><strong>CMD & Freq:</strong> {{ api.cmdAndFrequency }}</p>
+            
+            <ng-container *ngIf="api.approvers?.length">
+                <p style="margin-top: 4px;"><strong>Approvers:</strong></p>
+                <ul class="detail-list">
+                    <li *ngFor="let approver of api.approvers">{{ approver }}</li>
+                </ul>
+            </ng-container>
+
+            <ng-container *ngIf="api.expiryNotification?.length">
+                <p style="margin-top: 4px;"><strong>Notify Expiry:</strong></p>
+                <div class="chips-container" style="margin-top: 4px;">
+                    <span class="chip dest-chip" *ngFor="let notify of api.expiryNotification">{{ notify }}</span>
+                </div>
+            </ng-container>
+        </div>
+        }
+    </div>
+    }
+
     @if(summary.firewallGroups?.length) {
     <div class="info-section">
         <h4><mat-icon>security</mat-icon> Firewall Profiles</h4>

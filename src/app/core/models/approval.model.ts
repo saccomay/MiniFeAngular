@@ -114,6 +114,28 @@ export interface FirewallGroupSummary {
     rules: FirewallRuleSummary[];
 }
 
+export interface SuperUserSummary {
+    expiryDate: string;
+    isExpired: boolean;
+    userAccount: string;
+    quickBuild: string;
+    accessType: string;
+    purpose?: string;
+    approvers?: string[];
+    expiryNotification?: string[];
+}
+
+export interface RestApiSummary {
+    expiryDate: string;
+    isExpired: boolean;
+    quickBuild: string;
+    user: string;
+    reason?: string;
+    cmdAndFrequency?: string;
+    approvers?: string[];
+    expiryNotification?: string[];
+}
+
 export interface ProxyGroupSummary {
     expiryDate: string;
     isExpired: boolean;
@@ -129,6 +151,8 @@ export interface EntityApprovalSummary {
     firewallGroups?: FirewallGroupSummary[];
     proxyGroups?: ProxyGroupSummary[];
     proxyForAll?: { expiryDate: string, isExpired: boolean };
+    superUserPermissions?: SuperUserSummary[];
+    restApiPermissions?: RestApiSummary[];
     inSystemIds?: string[]; // System IDs this entity is part of
     totalPermissions: number;
     status: 'Valid' | 'Warning' | 'Expired' | 'None';
