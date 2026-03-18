@@ -8,195 +8,157 @@ import { ApprovalRequest, EntityApprovalSummary } from '../models/approval.model
 export class ApprovalService {
 
     // --- MOCK DATA ---
-
+    // Each request covers exactly ONE permission type.
+    // Multi-permission scenarios from the old design are now split into separate request entries.
     private mockRequests: ApprovalRequest[] = [
+
+        // ── REQ-2026-001 workstation setup (split into 4 requests) ──────────────────
+
         {
-            id: 'REQ-2025-001',
-            requester: 'User A',
-            reason: 'Setup new farm devices SystemID',
-            approvers: ['Manager D'],
-            expiryNotification: ['User A', 'User B', 'User C'],
-            originalFileUrl: '/assets/images/auth-bg.jpg',
-            permissions: [
-                {
-                    type: 'SystemID',
-                    expireDate: '2026-10-08',
-                    purpose: 'System Access',
-                    systemId: 'farm-controller.srv',
-                    users: ['A', 'B', 'C'],
-                    ips: ['192.168.10.10', '192.168.10.20']
-                }
-            ]
+            id: 'REQ-2026-001-ESC', requester: 'Senior.Dev', reason: 'Escort for Dev workstation', approvers: ['Manager Y'],
+            affectedEntities: [{ id: '10.20.30.1', type: 'Host' }],
+            permission: { type: 'Escort', items: [
+                { requestPeriod: '2025-01-01 08:00 ~ 2026-12-31 17:00', user: 'Dev 1', serialNo: 'DEV001', modelName: 'Dell Precision', ipAddress: '10.20.30.1', requestItem: 'Internet', macAddress: '00:11:22:33:44:01' }
+            ] }
         },
         {
-            id: 'REQ-2025-002',
-            requester: 'User B',
-            reason: 'Proxy Access to Slack and Github',
-            approvers: ['Manager A'],
-            permissions: [
-                {
-                    type: 'Proxy',
-                    requestPeriod: '2025-01-01 08:00 ~ 2026-03-20 17:00', // Expiring soon (Warning status)
-                    ipAddress: '10.50.0.12',
-                    user: 'B',
-                    targetIp: 'slack.com'
-                },
-                {
-                    type: 'Proxy',
-                    requestPeriod: '2025-01-01 08:00 ~ 2026-01-01 17:00', // Expired
-                    ipAddress: '10.50.0.12',
-                    user: 'B',
-                    targetIp: 'github.com'
-                }
-            ]
+            id: 'REQ-2026-001-FW', requester: 'Senior.Dev', reason: 'Firewall rules for Dev workstation', approvers: ['Manager Y'],
+            affectedEntities: [{ id: '10.20.30.1', type: 'Host' }],
+            permission: { type: 'Firewall', period: '2025-01-01 ~ 2026-12-31', user: 'Senior.Dev', rules: [
+                { user: 'Senior.Dev', source: '10.20.30.1', destination: 'github.com',    port: '443',  purpose: 'git',   category: 'TCP' },
+                { user: 'Senior.Dev', source: '10.20.30.1', destination: 'npm.org',        port: '443',  purpose: 'npm',   category: 'TCP' },
+                { user: 'Senior.Dev', source: '10.20.30.1', destination: 'staging-db.int', port: '5432', purpose: 'db',    category: 'TCP' },
+                { user: 'Senior.Dev', source: '10.20.30.1', destination: 'redis.int',      port: '6379', purpose: 'cache', category: 'TCP' },
+                { user: 'Senior.Dev', source: '10.20.30.1', destination: 'auth.int',       port: '8443', purpose: 'auth',  category: 'TCP' }
+            ]}
         },
         {
-            id: 'REQ-2025-003',
-            requester: 'User C',
-            reason: 'Firewall Access Database Sync',
-            approvers: ['Manager B'],
-            permissions: [
-                {
-                    type: 'Firewall',
-                    period: '2025-06-09 ~ 2026-06-08', // Valid
-                    user: 'C',
-                    notify: ['C'],
-                    rules: [
-                        { user: 'C', source: '10.50.0.12', destination: 'db.internal.net', port: '5432', purpose: 'postgres', category: 'TCP' },
-                        { user: 'C', source: '10.50.0.12', destination: 'redis.internal.net', port: '6379', purpose: 'redis', category: 'TCP' }
-                    ]
-                }
-            ]
+            id: 'REQ-2026-001-P', requester: 'Senior.Dev', reason: 'Proxy access for Dev workstation', approvers: ['Manager Y'],
+            affectedEntities: [{ id: '10.20.30.1', type: 'AP' }],
+            permission: { type: 'Proxy', requestPeriod: '2025-01-01 08:00 ~ 2026-12-31 17:00', rules: [
+                { ipAddress: '10.20.30.1', user: 'Senior.Dev', targetIp: 'stackoverflow.com' }
+            ]}
         },
         {
-            id: 'REQ-2025-004',
-            requester: 'User C',
-            reason: 'Firewall Access Legacy System',
-            approvers: ['Manager B'],
-            permissions: [
-                {
-                    type: 'Firewall',
-                    period: '2023-01-01 ~ 2024-01-01', // Expired
-                    user: 'C',
-                    notify: ['C'],
-                    rules: [
-                        { user: 'C', source: '10.50.0.12', destination: 'legacy-mainframe.net', port: '23', purpose: 'telnet', category: 'TCP' }
-                    ]
-                }
-            ]
+            id: 'REQ-2026-001-SID', requester: 'Senior.Dev', reason: 'SystemID for Dev workstation', approvers: ['Manager Y'],
+            affectedEntities: [{ id: '10.20.30.1', type: 'Host' }],
+            permission: { type: 'SystemID', expireDate: '2026-12-31', systemId: 'System.X', users: ['Senior.Dev'], ips: ['10.20.30.1'] }
+        },
+
+        // ── REQ-2026-002 API Gateway (split into 2) ─────────────────────────────────
+
+        {
+            id: 'REQ-2026-002-API', requester: 'API.Admin', reason: 'REST API for api.service', approvers: ['Manager X'],
+            permission: { type: 'RestApi', expireDate: '2026-06-30', user: 'api.service', quickBuild: 'CP Node', reason: 'Automated Status', cmdAndFrequency: 'curl -X GET /health (1min)' }
         },
         {
-            id: 'REQ-2025-005',
-            requester: 'User D',
-            reason: 'Proxy For All for build server',
-            approvers: ['Manager X'],
-            permissions: [
-                {
-                    type: 'ProxyForAll',
-                    requestPeriod: '2025-01-01 00:00 ~ 2026-12-31 23:59', // Valid
-                    ipAddress: 'build-server-01.infra',
-                    user: 'D'
-                }
-            ]
+            id: 'REQ-2026-002-SID', requester: 'API.Admin', reason: 'SystemID for cluster server', approvers: ['Manager X'],
+            affectedEntities: [{ id: '192.168.10.1', type: 'Host' }],
+            permission: { type: 'SystemID', expireDate: '2025-06-30', systemId: 'Sys.Cluster.1', users: ['api.service'], ips: ['192.168.10.1'] }
+        },
+
+        // ── Single-type requests ─────────────────────────────────────────────────────
+
+        {
+            id: 'REQ-2026-003', requester: 'DB.Admin', reason: 'Emergency Super User Access.', approvers: ['VP Engineering'],
+            permission: { type: 'SuperUser', expireDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], userAccount: 'db.admin', quickBuild: 'Oracle QuickBuild', accessType: 'Full' }
         },
         {
-            id: 'REQ-2025-006',
-            requester: 'User D',
-            reason: 'Proxy For All for old test server',
-            approvers: ['Manager X'],
-            permissions: [
-                {
-                    type: 'ProxyForAll',
-                    requestPeriod: '2020-01-01 00:00 ~ 2021-12-31 23:59', // Expired
-                    ipAddress: 'test-server-05.infra',
-                    user: 'D'
-                }
-            ]
+            id: 'REQ-2026-005', requester: 'Network.Team', reason: 'Global Proxy Gateway',
+            affectedEntities: [{ id: '192.168.254.254', type: 'Host' }],
+            permission: { type: 'ProxyForAll', requestPeriod: '2025-01-01 08:00 ~ 2028-12-31 17:00', ipAddress: '192.168.254.254', user: 'Network.Service' }
         },
         {
-            id: 'REQ-2025-007',
-            requester: 'User E',
-            reason: 'Complex Bi-Directional Firewall setup for Web Node',
-            approvers: ['Security Team'],
-            permissions: [
-                {
-                    type: 'Firewall',
-                    period: '2025-05-01 ~ 2025-12-31', // Valid
-                    user: 'E',
-                    rules: [
-                        { user: 'E', source: 'web-node-01', destination: 'db.internal.net', port: '5432', purpose: 'db access', category: 'TCP' },
-                        { user: 'E', source: 'web-node-01', destination: 'metrics.net', port: '9090', purpose: 'prometheus', category: 'TCP' }
-                    ]
-                },
-                {
-                    type: 'Firewall',
-                    period: '2025-05-01 ~ 2025-12-31', // Valid
-                    user: 'E',
-                    rules: [
-                        { user: 'E', source: 'lb.external.net', destination: 'web-node-01', port: '443', purpose: 'inbound web', category: 'TCP' },
-                        { user: 'E', source: 'monitor.internal.net', destination: 'web-node-01', port: '8080', purpose: 'health check', category: 'TCP' }
-                    ]
-                },
-                {
-                    type: 'Firewall',
-                    period: '2022-01-01 ~ 2023-01-01', // Expired
-                    user: 'E',
-                    rules: [
-                        { user: 'E', source: 'old-admin-pc', destination: 'web-node-01', port: '22', purpose: 'ssh', category: 'TCP' }
-                    ]
-                }
-            ]
+            id: 'REQ-2024-001', requester: 'API.Admin', reason: 'Old API tokens',
+            permission: { type: 'RestApi', expireDate: '2024-05-05', user: 'legacy.api', quickBuild: 'Legacy', reason: 'Deprecated System', cmdAndFrequency: 'N/A' }
         },
         {
-            id: 'REQ-2025-008',
-            requester: 'User F',
-            reason: 'Device Escort for contractor laptops',
-            approvers: ['Manager Z'],
-            permissions: [
-                {
-                    type: 'Escort',
-                    items: [
-                        { requestPeriod: '2025-06-01 08:00 ~ 2025-06-30 17:00', user: 'Contractor 1', serialNo: 'SN001', modelName: 'Thinkpad', ipAddress: '10.99.0.50', requestItem: 'Internet', macAddress: 'AA:11' },
-                        { requestPeriod: '2025-06-01 08:00 ~ 2025-06-30 17:00', user: 'Contractor 2', serialNo: 'SN002', modelName: 'MacBook', ipAddress: '10.99.0.51', requestItem: 'Internet', macAddress: 'BB:22' },
-                        { requestPeriod: '2020-01-01 08:00 ~ 2020-12-31 17:00', user: 'Contractor 3', serialNo: 'SN003', modelName: 'Dell XPS', ipAddress: '10.99.0.52', requestItem: 'Internet', macAddress: 'CC:33' }
-                    ]
-                }
-            ]
+            id: 'REQ-2026-014', requester: 'Architecture', reason: 'Reserving Namespace',
+            permission: { type: 'SystemID', expireDate: '2030-01-01', systemId: 'Arch.Reserve.Sys', users: ['Arch'], ips: [] }
+        },
+
+        // ── REQ-2026-018 CEO device (split into 2) ───────────────────────────────────
+
+        {
+            id: 'REQ-2026-018-PFA', requester: 'CEO', reason: 'ProxyForAll for CEO machine',
+            affectedEntities: [{ id: '10.1.1.1', type: 'Host' }],
+            permission: { type: 'ProxyForAll', requestPeriod: '2020-01-01 00:00 ~ 2030-12-31 23:59', ipAddress: '10.1.1.1', user: 'CEO.Device' }
         },
         {
-            id: 'REQ-2025-009',
-            requester: 'User G',
-            reason: 'System Admin Access for Server Management',
-            approvers: ['Manager D'],
-            expiryNotification: ['User A', 'User B', 'User C'],
-            permissions: [
-                {
-                    type: 'SuperUser',
-                    expireDate: '2026-10-08',
-                    purpose: 'Perform critical system updates',
-                    userAccount: 'abc.srv',
-                    quickBuild: 'Android QuickBuild',
-                    accessType: 'download for all'
-                },
-                {
-                    type: 'RestApi',
-                    expireDate: '2026-10-08',
-                    user: 'abc.srv',
-                    quickBuild: 'CP QuickBuild',
-                    reason: 'Automated status reporting',
-                    cmdAndFrequency: 'curl -X GET /status (Every 5 mins)'
-                }
-            ]
+            id: 'REQ-2026-018-SID', requester: 'CEO', reason: 'SystemID for CEO machine',
+            affectedEntities: [{ id: '10.1.1.1', type: 'Host' }],
+            permission: { type: 'SystemID', expireDate: '2030-12-31', systemId: 'Executive.Bypass', users: [], ips: ['10.1.1.1'] }
+        },
+
+        {
+            id: 'REQ-2026-019', requester: 'Security', reason: 'DMZ Testing',
+            affectedEntities: [{ id: '10.0.0.99', type: 'Host' }],
+            permission: { type: 'Firewall', period: '2025-01-01 ~ 2026-12-31', user: 'Security', rules: [
+                { user: 'Security', source: '10.0.0.99', destination: '8.8.8.8', port: '53', purpose: 'DNS', category: 'UDP' }
+            ]}
+        },
+        {
+            id: 'REQ-2027-001', requester: 'App.Srv', reason: 'Background Service',
+            permission: { type: 'SuperUser', expireDate: '2028-01-01', userAccount: 'app.service.1', quickBuild: 'Backend', accessType: 'RWX' }
+        },
+        {
+            // Proxy with multiple IP→target pairs
+            id: 'REQ-2027-002', requester: 'QA', reason: 'Testing proxy',
+            affectedEntities: [{ id: '10.50.50.50', type: 'AP' }],
+            permission: { type: 'Proxy', requestPeriod: '2025-01-01 08:00 ~ 2026-12-31 17:00', rules: [
+                { ipAddress: '10.50.50.50', user: 'QA', targetIp: '192.168.1.1' }
+            ]}
+        },
+
+        // ── REQ-2026-099 edge cases (split into 2 SystemID requests) ────────────────
+
+        {
+            id: 'REQ-2026-099-W', requester: 'Edge.Tester', reason: 'Testing Warning SystemID',
+            affectedEntities: [{ id: '10.99.99.99', type: 'Host' }],
+            permission: { type: 'SystemID', expireDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], systemId: 'Warning.Sys', users: ['Warn.User'], ips: ['10.99.99.99'] }
+        },
+        {
+            id: 'REQ-2026-099-D', requester: 'Edge.Tester', reason: 'Testing Expired SystemID',
+            affectedEntities: [{ id: '10.99.99.98', type: 'Host' }],
+            permission: { type: 'SystemID', expireDate: '2020-01-01', systemId: 'Dead.Sys', users: ['Dead.User'], ips: ['10.99.99.98'] }
+        },
+
+        // ── REQ-2026-100 audit expired (split into 3) ────────────────────────────────
+
+        {
+            id: 'REQ-2026-100-FW', requester: 'Audit.Team', reason: 'Expired Firewall test',
+            affectedEntities: [{ id: '10.55.55.55', type: 'Host' }],
+            permission: { type: 'Firewall', period: '2020-01-01 ~ 2021-12-31', user: 'Audit.FW', rules: [
+                { user: 'Audit.FW', source: '10.55.55.55', destination: '8.8.4.4', port: '53', purpose: 'DNS', category: 'UDP' }
+            ]}
+        },
+        {
+            id: 'REQ-2026-100-P', requester: 'Audit.Team', reason: 'Expired Proxy test',
+            affectedEntities: [{ id: '10.55.55.55', type: 'AP' }],
+            permission: { type: 'Proxy', requestPeriod: '2020-01-01 08:00 ~ 2021-12-31 17:00', rules: [
+                { ipAddress: '10.55.55.55', user: 'Audit.Proxy', targetIp: '1.1.1.1' }
+            ]}
+        },
+        {
+            id: 'REQ-2026-100-ESC', requester: 'Audit.Team', reason: 'Expired Escort test',
+            affectedEntities: [{ id: '10.55.55.55', type: 'Host' }],
+            permission: { type: 'Escort', items: [
+                { requestPeriod: '2020-01-01 08:00 ~ 2021-12-31 17:00', user: 'Audit.Escort', serialNo: 'AUD001', modelName: 'HP', ipAddress: '10.55.55.55', requestItem: 'Local', macAddress: 'AA:BB:CC:DD:EE:FF' }
+            ]}
         }
     ];
 
-    // Flattens the requests into a view centered around IPs and Accounts
-    private generateDeviceSummaries(): EntityApprovalSummary[] {
+    // Flattens the requests into a view centered around Hosts (BE-selected IPs), APs, and Accounts.
+    private generateHostSummaries(): EntityApprovalSummary[] {
+        // Map key = '<type>:<id>' so that same IP can appear as both Host and AP simultaneously.
         const summaryMap = new Map<string, EntityApprovalSummary>();
 
-        const getOrInit = (id: string, type: 'Device' | 'AP' | 'Account'): EntityApprovalSummary => {
-            if (!summaryMap.has(id)) {
-                summaryMap.set(id, {
+        const key = (type: string, id: string) => `${type}:${id}`;
+
+        const getOrInit = (id: string, type: 'Host' | 'AP' | 'Account'): EntityApprovalSummary => {
+            const k = key(type, id);
+            if (!summaryMap.has(k)) {
+                summaryMap.set(k, {
                     entityId: id,
                     entityType: type,
                     totalPermissions: 0,
@@ -205,183 +167,168 @@ export class ApprovalService {
                     firewallGroups: [],
                     proxyGroups: [],
                     superUserPermissions: [],
-                    restApiPermissions: [],
-                    inSystemIds: []
+                    restApiPermissions: []
                 });
             }
-            return summaryMap.get(id)!;
+            return summaryMap.get(k)!;
         };
 
+        const getHost = (ip: string) => summaryMap.get(key('Host', ip));
+        const getAP   = (ip: string) => summaryMap.get(key('AP', ip));
+
+        // Step 1: Pre-register all entity rows from each request's affectedEntities.
+        // Type (Host | AP) is declared explicitly in the mock data.
         this.mockRequests.forEach(req => {
-            req.permissions.forEach(perm => {
-                if (perm.type === 'SystemID') {
-                    // Account
-                    const acc = getOrInit(perm.systemId, 'Account');
-                    acc.totalPermissions++;
-                    if (!acc.relatedRequests.includes(req.id)) acc.relatedRequests.push(req.id);
-
-                    // IPs
-                    perm.ips.forEach(ip => {
-                        const dev = getOrInit(ip, 'Device');
-                        dev.totalPermissions++;
-                        if (!dev.inSystemIds!.includes(perm.systemId)) dev.inSystemIds!.push(perm.systemId);
-                        if (!dev.relatedRequests.includes(req.id)) dev.relatedRequests.push(req.id);
-                    });
-                }
-
-                if (perm.type === 'SuperUser') {
-                    const acc = getOrInit(perm.userAccount, 'Account');
-                    acc.totalPermissions++;
-                    
-                    const expiryDate = perm.expireDate || 'Unknown';
-                    const isExpired = new Date(expiryDate) < new Date();
-
-                    acc.superUserPermissions!.push({
-                        expiryDate,
-                        isExpired,
-                        userAccount: perm.userAccount,
-                        quickBuild: perm.quickBuild,
-                        accessType: perm.accessType,
-                        purpose: perm.purpose,
-                        approvers: req.approvers,
-                        expiryNotification: req.expiryNotification
-                    });
-
-                    if (!acc.relatedRequests.includes(req.id)) acc.relatedRequests.push(req.id);
-                }
-
-                if (perm.type === 'RestApi') {
-                    const acc = getOrInit(perm.user, 'Account');
-                    acc.totalPermissions++;
-
-                    const expiryDate = perm.expireDate || 'Unknown';
-                    const isExpired = new Date(expiryDate) < new Date();
-
-                    acc.restApiPermissions!.push({
-                        expiryDate,
-                        isExpired,
-                        user: perm.user,
-                        quickBuild: perm.quickBuild,
-                        reason: perm.reason,
-                        cmdAndFrequency: perm.cmdAndFrequency,
-                        approvers: req.approvers,
-                        expiryNotification: req.expiryNotification
-                    });
-
-                    if (!acc.relatedRequests.includes(req.id)) acc.relatedRequests.push(req.id);
-                }
-
-                if (perm.type === 'Proxy') {
-                    const ap = getOrInit(perm.ipAddress, 'AP');
-                    ap.totalPermissions++;
-                    const expiryDate = perm.requestPeriod.split('~')[1]?.trim() || 'Unknown';
-                    const isExpired = new Date(expiryDate) < new Date();
-
-                    let group = ap.proxyGroups!.find(g => g.expiryDate === expiryDate);
-                    if (!group) {
-                        group = { expiryDate, isExpired, targets: [] };
-                        ap.proxyGroups!.push(group);
-                    }
-                    group.targets.push(`${perm.targetIp}`);
-
-                    if (!ap.relatedRequests.includes(req.id)) ap.relatedRequests.push(req.id);
-                }
-
-                if (perm.type === 'ProxyForAll') {
-                    const dev = getOrInit(perm.ipAddress, 'Device');
-                    dev.totalPermissions++;
-                    const expiryDate = perm.requestPeriod.split('~')[1]?.trim() || 'Unknown';
-                    const isExpired = new Date(expiryDate) < new Date();
-                    dev.proxyForAll = { expiryDate, isExpired };
-                    if (!dev.relatedRequests.includes(req.id)) dev.relatedRequests.push(req.id);
-                }
-
-                if (perm.type === 'Firewall') {
-                    const expiryDate = perm.period.split('~')[1]?.trim() || 'Unknown';
-                    const isExpired = new Date(expiryDate) < new Date();
-
-                    perm.rules.forEach(rule => {
-                        // For the source IP, this is an OUTBOUND connection
-                        const src = getOrInit(rule.source, 'Device');
-                        src.totalPermissions++;
-                        let srcGroup = src.firewallGroups!.find(g => g.expiryDate === expiryDate);
-                        if (!srcGroup) {
-                            srcGroup = { expiryDate, isExpired, rules: [] };
-                            src.firewallGroups!.push(srcGroup);
-                        }
-                        // Check for duplicate rule before adding
-                        const srcDuplicate = srcGroup.rules.some(r => r.peer === rule.destination && r.port === rule.port && r.protocol === rule.category);
-                        if (!srcDuplicate) {
-                            srcGroup.rules.push({ direction: 'Out', peer: rule.destination, port: rule.port, protocol: rule.category });
-                        }
-                        if (!src.relatedRequests.includes(req.id)) src.relatedRequests.push(req.id);
-
-                        // For the destination IP, this is an INBOUND connection
-                        const dest = getOrInit(rule.destination, 'Device');
-                        dest.totalPermissions++;
-                        let destGroup = dest.firewallGroups!.find(g => g.expiryDate === expiryDate);
-                        if (!destGroup) {
-                            destGroup = { expiryDate, isExpired, rules: [] };
-                            dest.firewallGroups!.push(destGroup);
-                        }
-                        // Check for duplicate rule before adding
-                        const destDuplicate = destGroup.rules.some(r => r.peer === rule.source && r.port === rule.port && r.protocol === rule.category);
-                        if (!destDuplicate) {
-                            destGroup.rules.push({ direction: 'In', peer: rule.source, port: rule.port, protocol: rule.category });
-                        }
-                        if (!dest.relatedRequests.includes(req.id)) dest.relatedRequests.push(req.id);
-                    });
-                }
-
-                if (perm.type === 'Escort') {
-                    perm.items.forEach(item => {
-                        const dev = getOrInit(item.ipAddress, 'Device');
-                        dev.totalPermissions++;
-                        dev.hasEscort = true;
-                        dev.escortExpiry = item.requestPeriod.split('~')[1]?.trim();
-                        if (!dev.relatedRequests.includes(req.id)) dev.relatedRequests.push(req.id);
-                    });
-                }
+            (req.affectedEntities ?? []).forEach(entity => {
+                const e = getOrInit(entity.id, entity.type);
+                if (!e.relatedRequests.includes(req.id)) e.relatedRequests.push(req.id);
             });
         });
 
-        // Calculate statuses based on expiry dates rather than dummy data
+        // Step 2: For each request, handle its single permission and aggregate into the entity.
+        this.mockRequests.forEach(req => {
+            const perm = req.permission;
+
+            if (perm.type === 'SystemID') {
+                const expiryDate = perm.expireDate || 'Unknown';
+                const daysUntilExpiry = (new Date(expiryDate).getTime() - Date.now()) / (1000 * 3600 * 24);
+                let status: 'Valid' | 'Warning' | 'Expired' = 'Valid';
+                if (daysUntilExpiry < 0) status = 'Expired';
+                else if (daysUntilExpiry <= 30) status = 'Warning';
+                const systemIdObj = { systemId: perm.systemId, expiryDate, status, requestId: req.id };
+
+                perm.users.forEach(u => {
+                    const acc = getOrInit(u, 'Account');
+                    acc.totalPermissions++;
+                    if (!acc.inSystemId) acc.inSystemId = systemIdObj;
+                    if (!acc.relatedRequests.includes(req.id)) acc.relatedRequests.push(req.id);
+                });
+                perm.ips.forEach(ip => {
+                    const host = getHost(ip);
+                    if (host) {
+                        host.totalPermissions++;
+                        if (!host.inSystemId) host.inSystemId = systemIdObj;
+                        if (!host.relatedRequests.includes(req.id)) host.relatedRequests.push(req.id);
+                    }
+                });
+            }
+
+            else if (perm.type === 'SuperUser') {
+                const acc = getOrInit(perm.userAccount, 'Account');
+                acc.totalPermissions++;
+                const expiryDate = perm.expireDate || 'Unknown';
+                const isExpired = new Date(expiryDate) < new Date();
+                acc.superUserPermissions!.push({
+                    expiryDate, isExpired, requestId: req.id,
+                    userAccount: perm.userAccount, quickBuild: perm.quickBuild,
+                    accessType: perm.accessType, purpose: perm.purpose,
+                    approvers: req.approvers, expiryNotification: req.expiryNotification
+                });
+                if (!acc.relatedRequests.includes(req.id)) acc.relatedRequests.push(req.id);
+            }
+
+            else if (perm.type === 'RestApi') {
+                const acc = getOrInit(perm.user, 'Account');
+                acc.totalPermissions++;
+                const expiryDate = perm.expireDate || 'Unknown';
+                const isExpired = new Date(expiryDate) < new Date();
+                acc.restApiPermissions!.push({
+                    expiryDate, isExpired, requestId: req.id,
+                    user: perm.user, quickBuild: perm.quickBuild, reason: perm.reason,
+                    cmdAndFrequency: perm.cmdAndFrequency,
+                    approvers: req.approvers, expiryNotification: req.expiryNotification
+                });
+                if (!acc.relatedRequests.includes(req.id)) acc.relatedRequests.push(req.id);
+            }
+
+            else if (perm.type === 'Proxy') {
+                // Each rule in perm.rules has its own AP IP + target
+                perm.rules.forEach(rule => {
+                    const ap = getAP(rule.ipAddress);
+                    if (ap) {
+                        ap.totalPermissions++;
+                        const expiryDate = perm.requestPeriod.split('~')[1]?.trim() || 'Unknown';
+                        const isExpired = new Date(expiryDate) < new Date();
+                        let group = ap.proxyGroups!.find(g => g.expiryDate === expiryDate && g.requestId === req.id);
+                        if (!group) {
+                            group = { expiryDate, isExpired, requestId: req.id, targets: [] };
+                            ap.proxyGroups!.push(group);
+                        }
+                        group.targets.push(rule.targetIp);
+                        if (!ap.relatedRequests.includes(req.id)) ap.relatedRequests.push(req.id);
+                    }
+                });
+            }
+
+            else if (perm.type === 'ProxyForAll') {
+                const host = getHost(perm.ipAddress);
+                if (host) {
+                    host.totalPermissions++;
+                    const expiryDate = perm.requestPeriod.split('~')[1]?.trim() || 'Unknown';
+                    const isExpired = new Date(expiryDate) < new Date();
+                    host.proxyForAll = { expiryDate, isExpired, requestId: req.id };
+                    if (!host.relatedRequests.includes(req.id)) host.relatedRequests.push(req.id);
+                }
+            }
+
+            else if (perm.type === 'Firewall') {
+                const expiryDate = perm.period.split('~')[1]?.trim() || 'Unknown';
+                const isExpired = new Date(expiryDate) < new Date();
+                perm.rules.forEach(rule => {
+                    const src = getHost(rule.source);
+                    if (src) {
+                        src.totalPermissions++;
+                        let g = src.firewallGroups!.find(g => g.expiryDate === expiryDate && g.requestId === req.id);
+                        if (!g) { g = { expiryDate, isExpired, requestId: req.id, rules: [] }; src.firewallGroups!.push(g); }
+                        if (!g.rules.some(r => r.peer === rule.destination && r.port === rule.port && r.protocol === rule.category))
+                            g.rules.push({ direction: 'Out', peer: rule.destination, port: rule.port, protocol: rule.category });
+                        if (!src.relatedRequests.includes(req.id)) src.relatedRequests.push(req.id);
+                    }
+                    const dest = getHost(rule.destination);
+                    if (dest) {
+                        dest.totalPermissions++;
+                        let g = dest.firewallGroups!.find(g => g.expiryDate === expiryDate && g.requestId === req.id);
+                        if (!g) { g = { expiryDate, isExpired, requestId: req.id, rules: [] }; dest.firewallGroups!.push(g); }
+                        if (!g.rules.some(r => r.peer === rule.source && r.port === rule.port && r.protocol === rule.category))
+                            g.rules.push({ direction: 'In', peer: rule.source, port: rule.port, protocol: rule.category });
+                        if (!dest.relatedRequests.includes(req.id)) dest.relatedRequests.push(req.id);
+                    }
+                });
+            }
+
+            else if (perm.type === 'Escort') {
+                perm.items.forEach(item => {
+                    const host = getHost(item.ipAddress);
+                    if (host) {
+                        host.totalPermissions++;
+                        host.hasEscort = true;
+                        host.escortExpiry = item.requestPeriod.split('~')[1]?.trim();
+                        host.escortRequestId = req.id;
+                        if (!host.relatedRequests.includes(req.id)) host.relatedRequests.push(req.id);
+                    }
+                });
+            }
+        });
+
+        // Step 3: Calculate overall status per entity
         const summaries = Array.from(summaryMap.values());
         summaries.forEach(summary => {
-            let hasExpired = false;
-            let hasWarning = false;
+            let hasExpired = false, hasWarning = false;
             const now = new Date();
-            const warningThreshold = new Date();
-            warningThreshold.setDate(now.getDate() + 30); // Warn if expiring in 30 days
-
-            const checkExpiry = (expiryStr: string | undefined, isExpiredFlag?: boolean) => {
-                if (!expiryStr) return;
-                const expDate = new Date(expiryStr);
-                if (isExpiredFlag || expDate < now) {
-                    hasExpired = true;
-                } else if (expDate < warningThreshold) {
-                    hasWarning = true;
-                }
+            const warnAt = new Date(); warnAt.setDate(now.getDate() + 30);
+            const check = (d: string | undefined, expired?: boolean) => {
+                if (!d) return;
+                const dt = new Date(d);
+                if (expired || dt < now) hasExpired = true;
+                else if (dt < warnAt) hasWarning = true;
             };
-
-            checkExpiry(summary.escortExpiry);
-
-            if (summary.proxyForAll) {
-                checkExpiry(summary.proxyForAll.expiryDate, summary.proxyForAll.isExpired);
-            }
-
-            summary.firewallGroups?.forEach(g => checkExpiry(g.expiryDate, g.isExpired));
-            summary.proxyGroups?.forEach(g => checkExpiry(g.expiryDate, g.isExpired));
-            summary.superUserPermissions?.forEach(p => checkExpiry(p.expiryDate, p.isExpired));
-            summary.restApiPermissions?.forEach(p => checkExpiry(p.expiryDate, p.isExpired));
-
-            if (hasExpired) {
-                summary.status = 'Expired';
-            } else if (hasWarning) {
-                summary.status = 'Warning';
-            } else {
-                summary.status = 'Valid';
-            }
+            check(summary.escortExpiry);
+            if (summary.proxyForAll) check(summary.proxyForAll.expiryDate, summary.proxyForAll.isExpired);
+            summary.firewallGroups?.forEach(g => check(g.expiryDate, g.isExpired));
+            summary.proxyGroups?.forEach(g => check(g.expiryDate, g.isExpired));
+            summary.superUserPermissions?.forEach(p => check(p.expiryDate, p.isExpired));
+            summary.restApiPermissions?.forEach(p => check(p.expiryDate, p.isExpired));
+            summary.status = hasExpired ? 'Expired' : hasWarning ? 'Warning' : 'Valid';
         });
 
         return summaries;
@@ -389,8 +336,8 @@ export class ApprovalService {
 
     // --- API METHODS ---
 
-    getDeviceSummaries(): Observable<EntityApprovalSummary[]> {
-        return of(this.generateDeviceSummaries()).pipe(delay(500));
+    getHostSummaries(): Observable<EntityApprovalSummary[]> {
+        return of(this.generateHostSummaries()).pipe(delay(500));
     }
 
     getRequestDetails(requestId: string): Observable<ApprovalRequest | undefined> {
@@ -402,27 +349,21 @@ export class ApprovalService {
         return of(this.mockRequests).pipe(delay(300));
     }
 
-    // Mock processing an uploaded file
     importApprovalFile(file: File): Observable<{ message: string, extractedRequests: ApprovalRequest[] }> {
-        // Return some dummy new request data to simulate OCR/Extract
         const newReq: ApprovalRequest = {
             id: `REQ-NEW-${Math.floor(Math.random() * 1000)}`,
             requester: 'Extracted User',
-            permissions: [
-                {
-                    type: 'Firewall',
-                    period: '2026-01-01 ~ 2027-01-01',
-                    user: 'Extracted User',
-                    rules: [
-                        { user: 'Extracted User', source: '10.0.0.99', destination: '8.8.8.8', port: '53', purpose: 'DNS', category: 'UDP' }
-                    ]
-                }
-            ]
+            affectedEntities: [{ id: '10.0.0.99', type: 'Host' }],
+            permission: {
+                type: 'Firewall',
+                period: '2026-01-01 ~ 2027-01-01',
+                user: 'Extracted User',
+                rules: [
+                    { user: 'Extracted User', source: '10.0.0.99', destination: '8.8.8.8', port: '53', purpose: 'DNS', category: 'UDP' }
+                ]
+            }
         };
-        return of({
-            message: 'File processed successfully',
-            extractedRequests: [newReq]
-        }).pipe(delay(1500));
+        return of({ message: 'File processed successfully', extractedRequests: [newReq] }).pipe(delay(1500));
     }
 
     applyApprovals(requests: ApprovalRequest[]): Observable<boolean> {
@@ -430,3 +371,4 @@ export class ApprovalService {
         return of(true).pipe(delay(800));
     }
 }
+

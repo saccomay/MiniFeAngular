@@ -1,0 +1,40 @@
+<div class="dialog-header">
+    <h2 mat-dialog-title>
+        <mat-icon style="vertical-align: middle; color: var(--primary-color); margin-right: 8px;">security</mat-icon>
+        Full Firewall Rules
+    </h2>
+    <button mat-icon-button mat-dialog-close>
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<div mat-dialog-content class="dialog-content custom-scrollbar">
+    <div class="filter-controls">
+        <mat-button-toggle-group [(ngModel)]="directionFilter" name="directionFilter" aria-label="Direction Filter">
+            <mat-button-toggle value="All">All</mat-button-toggle>
+            <mat-button-toggle value="In">Inbound</mat-button-toggle>
+            <mat-button-toggle value="Out">Outbound</mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <div class="search-box">
+            <mat-icon>search</mat-icon>
+            <input type="text" [(ngModel)]="searchText" placeholder="Search IP, Port, Protocol...">
+        </div>
+    </div>
+
+    <div class="dialog-rules-list">
+        @for(rule of filteredRules; track $index) {
+            <div class="dialog-rule-item">
+                <span class="chip dialog-chip" [class.dest-chip]="rule.direction === 'Out'" [class.src-chip]="rule.direction === 'In'">
+                    {{rule.direction}}
+                </span>
+                <span class="rule-peer">{{rule.peer}}</span>
+                <span class="rule-port-proto">Port: {{rule.port}} [{{rule.protocol}}]</span>
+            </div>
+        }
+        @if(filteredRules.length === 0) {
+            <div class="empty-state">
+                <p>No matching rules found</p>
+            </div>
+        }
+    </div>
+</div>

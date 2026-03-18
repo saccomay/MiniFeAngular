@@ -8,6 +8,10 @@
 
 .grid-container {
     position: relative; // crucial: contain the absolute drawer within the grid
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
 
     .drawer-container {
         position: absolute;
@@ -95,6 +99,11 @@
             span {
                 color: var(--text-secondary);
             }
+
+            .expired-text {
+                color: var(--error-color);
+                font-weight: 500;
+            }
         }
 
         .success-icon {
@@ -132,12 +141,16 @@
                 border-radius: 6px;
                 background: rgba(145, 158, 171, 0.08);
 
+                border-left: 3px solid transparent;
+
                 &.valid {
                     background: rgba(34, 197, 94, 0.08); // Success green tint
+                    border-left-color: rgba(34, 197, 94, 0.7);
                 }
 
                 &.expired {
                     background: rgba(255, 86, 48, 0.08); // Error red tint
+                    border-left-color: rgba(255, 86, 48, 0.7);
                 }
 
                 mat-icon {

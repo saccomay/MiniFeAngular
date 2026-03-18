@@ -5,7 +5,10 @@ export interface ApprovalRequest {
     approvers?: string[];
     expiryNotification?: string[];
     originalFileUrl?: string; // Mock file upload
-    permissions: Permission[];
+    // Entities (Host IPs / AP IPs) this request applies to — explicitly typed by BE.
+    // Account rows are always derived from the user fields inside each permission.
+    affectedEntities?: Array<{ id: string; type: 'Host' | 'AP' }>;
+    permission: Permission; // each request covers exactly ONE permission type
 }
 
 export type PermissionType = 'SystemID' | 'SuperUser' | 'RestApi' | 'Proxy' | 'ProxyForAll' | 'Firewall' | 'Escort';
@@ -41,13 +44,18 @@ export interface RestApiPermission extends BasePermission {
     cmdAndFrequency?: string; // List CMD and frequency
 }
 
-// Proxy Permission
+// Proxy Item: one AP IP → one target URL
+export interface ProxyRule {
+    ipAddress: string; // AP IP
+    user: string;
+    targetIp: string;  // target URL/IP
+}
+
+// Proxy Permission: one AP or multiple APs each with their own target URL
 export interface ProxyPermission extends BasePermission {
     type: 'Proxy';
-    ipAddress: string; // IP address
-    user: string;
-    targetIp: string;
     requestPeriod: string; // e.g., 2025-06-09 08:00 ~ 2026-06-08 17:00
+    rules: ProxyRule[];
 }
 
 // Proxy For All Permission
@@ -111,12 +119,14 @@ export interface FirewallRuleSummary {
 export interface FirewallGroupSummary {
     expiryDate: string;
     isExpired: boolean;
+    requestId: string;
     rules: FirewallRuleSummary[];
 }
 
 export interface SuperUserSummary {
     expiryDate: string;
     isExpired: boolean;
+    requestId: string;
     userAccount: string;
     quickBuild: string;
     accessType: string;
@@ -128,6 +138,7 @@ export interface SuperUserSummary {
 export interface RestApiSummary {
     expiryDate: string;
     isExpired: boolean;
+    requestId: string;
     quickBuild: string;
     user: string;
     reason?: string;
@@ -139,21 +150,30 @@ export interface RestApiSummary {
 export interface ProxyGroupSummary {
     expiryDate: string;
     isExpired: boolean;
+    requestId: string;
     targets: string[];
 }
 
-// DTO for the flattened table view (Device/IP/Account perspective)
+export interface SystemIdGroupSummary {
+    systemId: string;
+    expiryDate: string;
+    status: 'Valid' | 'Warning' | 'Expired';
+    requestId: string;
+}
+
+// DTO for the flattened table view (Host/AP/Account perspective)
 export interface EntityApprovalSummary {
-    entityId: string; // Can be an IP (e.g., 192.168.1.1) or Account (e.g., abc.srv)
-    entityType: 'Device' | 'AP' | 'Account';
+    entityId: string; // Can be a BE-selected IP (Host/AP) or Account name
+    entityType: 'Host' | 'AP' | 'Account';
     hasEscort?: boolean;
     escortExpiry?: string;
+    escortRequestId?: string;
     firewallGroups?: FirewallGroupSummary[];
     proxyGroups?: ProxyGroupSummary[];
-    proxyForAll?: { expiryDate: string, isExpired: boolean };
+    proxyForAll?: { expiryDate: string, isExpired: boolean, requestId: string };
     superUserPermissions?: SuperUserSummary[];
     restApiPermissions?: RestApiSummary[];
-    inSystemIds?: string[]; // System IDs this entity is part of
+    inSystemId?: SystemIdGroupSummary; // A single Advanced System ID this entity is part of
     totalPermissions: number;
     status: 'Valid' | 'Warning' | 'Expired' | 'None';
     relatedRequests: string[]; // Request IDs that affect this entity

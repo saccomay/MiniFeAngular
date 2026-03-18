@@ -24,7 +24,14 @@
     <div class="info-section">
         <h4><mat-icon>shield</mat-icon> Escort Permission</h4>
         <div class="info-card check">
-            <p><strong>Valid Until:</strong> {{ summary.escortExpiry }}</p>
+            <div class="card-header-row">
+                <p><strong>Valid Until:</strong> {{ summary.escortExpiry }}</p>
+                @if(summary.escortRequestId) {
+                    <button class="ref-link-btn" (click)="openRequestDetails(summary.escortRequestId)">
+                        <mat-icon>launch</mat-icon> {{ summary.escortRequestId }}
+                    </button>
+                }
+            </div>
             <p class="desc">PC is registered for Internet Access Escort.</p>
         </div>
     </div>
@@ -36,7 +43,14 @@
 
         @if(summary.proxyForAll) {
         <div class="info-card warning">
-            <p><strong>Proxy For All Target</strong></p>
+            <div class="card-header-row">
+                <p><strong>Proxy For All Target</strong></p>
+                @if(summary.proxyForAll.requestId) {
+                    <button class="ref-link-btn" (click)="openRequestDetails(summary.proxyForAll.requestId)">
+                        <mat-icon>launch</mat-icon> {{ summary.proxyForAll.requestId }}
+                    </button>
+                }
+            </div>
             <p class="desc">Expiry: <span [class]="summary.proxyForAll.isExpired ? 'text-error' : 'text-valid'">{{
                     summary.proxyForAll.expiryDate }}</span></p>
         </div>
@@ -44,9 +58,16 @@
 
         @if(summary.proxyGroups?.length) {
         @for(group of summary.proxyGroups; track $index) {
-        <div class="info-card" style="margin-top: 8px;">
-            <p><strong>Expiry:</strong> <span [class]="group.isExpired ? 'text-error' : 'text-valid'">{{
-                    group.expiryDate }}</span></p>
+        <div class="info-card">
+            <div class="card-header-row">
+                <p><strong>Expiry:</strong> <span [class]="group.isExpired ? 'text-error' : 'text-valid'">{{
+                        group.expiryDate }}</span></p>
+                @if(group.requestId) {
+                    <button class="ref-link-btn" (click)="openRequestDetails(group.requestId)">
+                        <mat-icon>launch</mat-icon> {{ group.requestId }}
+                    </button>
+                }
+            </div>
             <div class="chips-container" style="margin-top: 8px;">
                 @for (target of group.targets; track target) {
                 <span class="chip dest-chip">{{target}}</span>
@@ -58,13 +79,21 @@
     </div>
     }
 
-    @if(summary.inSystemIds?.length) {
+    @if(summary.inSystemId) {
     <div class="info-section">
-        <h4><mat-icon>group</mat-icon> System IDs</h4>
-        <div class="chips-container">
-            @for(sysId of summary.inSystemIds; track sysId) {
-            <span class="chip system-chip">{{ sysId }}</span>
-            }
+        <h4><mat-icon>group</mat-icon> System ID</h4>
+        
+        <div class="compact-system-id" [ngClass]="summary.inSystemId.status.toLowerCase()">
+            <mat-icon class="sys-icon">dns</mat-icon>
+            <span class="sys-name">{{ summary.inSystemId.systemId }}</span>
+            <span class="sys-expiry" *ngIf="summary.inSystemId.expiryDate && summary.inSystemId.expiryDate !== 'Unknown'">
+                <mat-icon class="date-icon">event</mat-icon>
+                {{ summary.inSystemId.expiryDate }}
+            </span>
+            <span class="sys-status">{{ summary.inSystemId.status }}</span>
+            <button mat-icon-button class="action-btn" (click)="openExternalLink(summary.inSystemId.requestId)" title="Open Request in new tab">
+                <mat-icon>open_in_new</mat-icon>
+            </button>
         </div>
     </div>
     }
@@ -74,8 +103,15 @@
         <h4><mat-icon>admin_panel_settings</mat-icon> Super User Access</h4>
         
         @for(sup of summary.superUserPermissions; track $index) {
-        <div class="info-card" style="margin-top: 8px;">
-            <p><strong>Expiry:</strong> <span [class]="sup.isExpired ? 'text-error' : 'text-valid'">{{ sup.expiryDate }}</span></p>
+        <div class="info-card">
+            <div class="card-header-row">
+                <p><strong>Expiry:</strong> <span [class]="sup.isExpired ? 'text-error' : 'text-valid'">{{ sup.expiryDate }}</span></p>
+                @if(sup.requestId) {
+                    <button class="ref-link-btn" (click)="openExternalLink(sup.requestId)">
+                        <mat-icon>open_in_new</mat-icon> {{ sup.requestId }}
+                    </button>
+                }
+            </div>
             <p><strong>QuickBuild:</strong> {{ sup.quickBuild }}</p>
             <p><strong>Access Type:</strong> {{ sup.accessType }}</p>
             <p *ngIf="sup.purpose"><strong>Purpose:</strong> {{ sup.purpose }}</p>
@@ -103,8 +139,15 @@
         <h4><mat-icon>api</mat-icon> REST API Access</h4>
         
         @for(api of summary.restApiPermissions; track $index) {
-        <div class="info-card" style="margin-top: 8px;">
-            <p><strong>Expiry:</strong> <span [class]="api.isExpired ? 'text-error' : 'text-valid'">{{ api.expiryDate }}</span></p>
+        <div class="info-card">
+            <div class="card-header-row">
+                <p><strong>Expiry:</strong> <span [class]="api.isExpired ? 'text-error' : 'text-valid'">{{ api.expiryDate }}</span></p>
+                @if(api.requestId) {
+                    <button class="ref-link-btn" (click)="openExternalLink(api.requestId)">
+                        <mat-icon>open_in_new</mat-icon> {{ api.requestId }}
+                    </button>
+                }
+            </div>
             <p><strong>QuickBuild:</strong> {{ api.quickBuild }}</p>
             <p *ngIf="api.reason"><strong>Reason:</strong> {{ api.reason }}</p>
             <p *ngIf="api.cmdAndFrequency"><strong>CMD & Freq:</strong> {{ api.cmdAndFrequency }}</p>
@@ -132,14 +175,28 @@
         <h4><mat-icon>security</mat-icon> Firewall Profiles</h4>
 
         @for(group of summary.firewallGroups; track $index) {
-        <div class="info-card" style="margin-top: 8px;">
-            <p><strong>Expiry:</strong> <span [class]="group.isExpired ? 'text-error' : 'text-valid'">{{
-                    group.expiryDate }}</span></p>
+        <div class="info-card">
+            <div class="card-header-row">
+                <p><strong>Expiry:</strong> <span [class]="group.isExpired ? 'text-error' : 'text-valid'">{{
+                        group.expiryDate }}</span></p>
+                @if(group.requestId) {
+                    <button class="ref-link-btn" (click)="openRequestDetails(group.requestId)">
+                        <mat-icon>launch</mat-icon> {{ group.requestId }}
+                    </button>
+                }
+            </div>
             <div class="chips-container" style="margin-top: 8px;">
-                @for (rule of group.rules; track $index) {
+                <!-- Show max 3 ips -->
+                @for (rule of group.rules | slice:0:3; track $index) {
                 <span class="chip" [class.dest-chip]="rule.direction === 'Out'" [class.src-chip]="rule.direction === 'In'">
                     {{rule.direction}}: {{rule.peer}}:{{rule.port}} [{{rule.protocol}}]
                 </span>
+                }
+                
+                @if(group.rules.length > 3) {
+                    <button class="show-more-btn" (click)="openFirewallRulesDialog(group.rules)">
+                        <mat-icon>fullscreen</mat-icon> +{{ group.rules.length - 3 }} rules
+                    </button>
                 }
             </div>
         </div>
@@ -148,7 +205,7 @@
     }
 
     <div class="info-section">
-        <h4><mat-icon>assignment</mat-icon> Related Requests ({{ summary.relatedRequests.length }})</h4>
+        <h4><mat-icon>assignment</mat-icon> All Related Requests ({{ summary.relatedRequests.length }})</h4>
         <div class="request-list">
             @for(reqId of summary.relatedRequests; track reqId) {
             <div class="request-item" (click)="openRequestDetails(reqId)">

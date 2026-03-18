@@ -56,10 +56,9 @@ export class ApprovalsComponent implements OnInit {
   // Toolbar states
   tabs: TabOption[] = [
     { value: 'all', label: 'All', count: 0 },
-    // Add additional tabs if needed based on entity type or status
     { value: 'Account', label: 'Accounts', color: '#10B981', count: 0 },
     { value: 'AP', label: 'APs', color: '#3B82F6', count: 0 },
-    { value: 'IP', label: 'IPs', color: '#F59E0B', count: 0 }
+    { value: 'Host', label: 'IPs', color: '#F59E0B', count: 0 }
   ];
   activeTab = 'all';
   quickFilterText = '';
@@ -75,7 +74,7 @@ export class ApprovalsComponent implements OnInit {
       cellRenderer: (params: any) => {
         if (!params.value) return '';
         const summary: EntityApprovalSummary = params.data;
-        const iconName = summary.entityType === 'Account' ? 'manage_accounts' : (summary.entityType === 'AP' ? 'router' : 'computer');
+        const iconName = summary.entityType === 'Account' ? 'manage_accounts' : (summary.entityType === 'AP' ? 'router' : 'dns');
         const iconClass = summary.entityType === 'Account' ? 'is-account' : (summary.entityType === 'AP' ? 'is-ap' : 'is-computer');
         return `
           <div class="entity-cell">
@@ -98,9 +97,38 @@ export class ApprovalsComponent implements OnInit {
       cellRenderer: (params: any) => {
         const d: EntityApprovalSummary = params.data;
         if (d.hasEscort && d.escortExpiry) {
-          return `<div class="info-cell"><mat-icon class="mat-icon material-icons success-icon">check_circle</mat-icon> <span>${d.escortExpiry}</span></div>`;
+          const dateOnly = d.escortExpiry.split(' ')[0];
+          const isExpired = new Date(d.escortExpiry) < new Date();
+          const iconName = isExpired ? 'error' : 'check_circle';
+          const color = isExpired ? '#ef4444' : '#22c55e';
+          const classStr = isExpired ? 'expired-text' : '';
+          
+          return `<div class="info-cell"><mat-icon class="mat-icon material-icons" style="color: ${color}">${iconName}</mat-icon> <span class="${classStr}">${dateOnly}</span></div>`;
         }
         return '<span class="empty-text">-</span>';
+      }
+    },
+    {
+      headerName: 'System ID',
+      width: 140,
+      cellRenderer: (params: any) => {
+        const d: EntityApprovalSummary = params.data;
+        if (d.inSystemId?.expiryDate) {
+          const status = d.inSystemId.status;
+          let iconName = 'check_circle';
+          let iconColor = '#60a5fa';
+          
+          if (status === 'Expired') {
+            iconName = 'cancel';
+            iconColor = '#ef4444'; // Red
+          } else if (status === 'Warning') {
+            iconName = 'warning';
+            iconColor = '#ff9800'; // Orange/Yellow
+          }
+          
+          return `<div class="info-cell"><mat-icon class="mat-icon material-icons accent-icon" style="color: ${iconColor}" title="System ID ${status}">${iconName}</mat-icon> <span>${d.inSystemId.expiryDate}</span></div>`;
+        }
+        return '<div class="info-cell"><span class="empty-text">-</span></div>';
       }
     },
     {
@@ -149,42 +177,49 @@ export class ApprovalsComponent implements OnInit {
     },
     {
       headerName: 'Proxy',
-      flex: 1.5,
+      flex: 1,
       autoHeight: true,
       wrapText: true,
       cellRenderer: (params: any) => {
         const d: EntityApprovalSummary = params.data;
-        let html = '<div class="proxy-info">';
+        
+        // Proxy For All takes precedence if active
         if (d.proxyForAll) {
-          const p = d.proxyForAll;
-          const expClass = p.isExpired ? 'expired' : 'valid';
-          const iconClass = p.isExpired ? 'error' : 'public';
-          html += `<div class="proxy-item ${expClass}" title="Proxy For All"><mat-icon class="mat-icon material-icons">${iconClass}</mat-icon> <span>${p.expiryDate} (All)</span></div>`;
+            const expClass = d.proxyForAll.isExpired ? 'expired' : 'valid';
+            const iconClass = d.proxyForAll.isExpired ? 'error' : 'public';
+            const dateOnly = d.proxyForAll.expiryDate.split(' ')[0];
+            return `<div class="proxy-info"><div class="proxy-item ${expClass}" title="Proxy For All"><mat-icon class="mat-icon material-icons">${iconClass}</mat-icon> <div><strong>${dateOnly} (All)</strong></div></div></div>`;
         }
+
         if (d.proxyGroups && d.proxyGroups.length > 0) {
-          d.proxyGroups.forEach(group => {
-            const expClass = group.isExpired ? 'expired' : 'valid';
-            const iconClass = group.isExpired ? 'error' : 'link';
-
-            let targetsHtml = '';
-            group.targets.forEach(t => { targetsHtml += `<div style="margin-top: 2px;">• ${t}</div>` });
-
-            html += `<div class="proxy-item ${expClass}" title="${group.targets.join(', ')}">`;
-            html += `<mat-icon class="mat-icon material-icons">${iconClass}</mat-icon> `;
-            html += `<div><strong>${group.expiryDate}</strong>${targetsHtml}</div>`;
-            html += `</div>`;
-          });
+            let html = '<div class="proxy-info">';
+            d.proxyGroups.forEach(group => {
+                const expClass = group.isExpired ? 'expired' : 'valid';
+                const iconClass = group.isExpired ? 'error' : 'link';
+                const dateOnly = group.expiryDate.split(' ')[0];
+                let targetsHtml = '';
+                group.targets.slice(0, 2).forEach(t => targetsHtml += `<div style="margin-top: 2px;">• ${t}</div>`);
+                if (group.targets.length > 2) {
+                   targetsHtml += `<div style="margin-top: 2px;">• +${group.targets.length - 2} more</div>`;
+                }
+                
+                html += `<div class="proxy-item ${expClass}" title="${group.targets.join(', ')}">`;
+                html += `<mat-icon class="mat-icon material-icons">${iconClass}</mat-icon> `;
+                html += `<div><strong>${dateOnly}</strong>${targetsHtml}</div>`;
+                html += `</div>`;
+            });
+            html += '</div>';
+            return html;
         }
-        if (!d.proxyForAll && (!d.proxyGroups || d.proxyGroups.length === 0)) {
-          return '<span class="empty-text">-</span>';
-        }
-        return html + '</div>';
+
+        return '<span class="empty-text">-</span>';
       }
     },
     {
       field: 'totalPermissions',
       headerName: 'Total Perms',
-      width: 130,
+      width: 120,
+      hide: true,
       cellRenderer: (params: any) => {
         return `<div class="permissions-info"><span class="perm-count">${params.value} Total</span></div>`;
       }
@@ -204,7 +239,7 @@ export class ApprovalsComponent implements OnInit {
 
   loadData() {
     this.loading = true;
-    this.approvalService.getDeviceSummaries().subscribe(data => {
+    this.approvalService.getHostSummaries().subscribe(data => {
       this.summaries = data;
       this.filteredSummaries = [...this.summaries];
       this.updateTabCounts();
@@ -231,13 +266,13 @@ export class ApprovalsComponent implements OnInit {
     const allCount = this.summaries.length;
     const accountCount = this.summaries.filter(s => s.entityType === 'Account').length;
     const apCount = this.summaries.filter(s => s.entityType === 'AP').length;
-    const ipCount = this.summaries.filter(s => (s.entityType as string) === 'IP').length;
+    const hostCount = this.summaries.filter(s => s.entityType === 'Host').length;
 
     this.tabs = this.tabs.map(tab => {
       if (tab.value === 'all') return { ...tab, count: allCount };
       if (tab.value === 'Account') return { ...tab, count: accountCount };
       if (tab.value === 'AP') return { ...tab, count: apCount };
-      if (tab.value === 'IP') return { ...tab, count: ipCount };
+      if (tab.value === 'Host') return { ...tab, count: hostCount };
       return tab;
     });
   }
@@ -253,16 +288,7 @@ export class ApprovalsComponent implements OnInit {
     this.activeTab = tabValue;
     if (this.gridApi) {
       this.gridApi.setColumnFilterModel('entityId', null);
-      
-      if (tabValue === 'Account' || tabValue === 'AP' || tabValue === 'IP') {
-         // The column contains entityType information within the cellRenderer, 
-         // but filtering is typically done on the data field itself. If we want standard Ag-Grid 
-         // filtering by entityType, we should add it as a hidden field or value getter.
-         // Let's manually apply custom logic for filtering the dataset:
-         this.applyFilters();
-      } else {
-         this.applyFilters();
-      }
+      this.applyFilters();
     }
   }
 

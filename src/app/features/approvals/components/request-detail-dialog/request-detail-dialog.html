@@ -32,60 +32,64 @@
 
     <mat-divider class="divider"></mat-divider>
 
-    <h3 class="section-title">Permissions ({{ request.permissions.length }})</h3>
+    <h3 class="section-title">Permission: {{ request.permission.type }}</h3>
 
     <div class="permissions-list">
-        @for(perm of request.permissions; track perm.type) {
         <div class="permission-card">
             <div class="perm-header">
-                <span class="perm-type">{{ perm.type }}</span>
-                @if(perm.expireDate) {
-                <span class="perm-expiry">Expires: {{ perm.expireDate }}</span>
+                <span class="perm-type">{{ request.permission.type }}</span>
+                @if($any(request.permission).expireDate) {
+                <span class="perm-expiry">Expires: {{ $any(request.permission).expireDate }}</span>
+                }
+                @if($any(request.permission).requestPeriod) {
+                <span class="perm-expiry">Period: {{ $any(request.permission).requestPeriod }}</span>
                 }
             </div>
 
             <div class="perm-body">
-                @if(perm.type === 'SystemID') {
-                <p><strong>System ID:</strong> {{ perm['systemId'] }}</p>
-                <p><strong>Users:</strong> {{ perm['users']?.join(', ') }}</p>
-                <p><strong>IPs:</strong> {{ perm['ips']?.join(', ') }}</p>
+                @if(request.permission.type === 'SystemID') {
+                <p><strong>System ID:</strong> {{ request.permission['systemId'] }}</p>
+                <p><strong>Users:</strong> {{ request.permission['users']?.join(', ') }}</p>
+                <p><strong>IPs:</strong> {{ request.permission['ips']?.join(', ') }}</p>
                 }
-                @if(perm.type === 'Firewall') {
-                <p><strong>Period:</strong> {{ perm['period'] }}</p>
+                @if(request.permission.type === 'Firewall') {
+                <p><strong>Period:</strong> {{ request.permission['period'] }}</p>
                 <ul class="rules-list">
-                    @for(rule of perm['rules']; track rule.destination) {
+                    @for(rule of request.permission['rules']; track rule.destination) {
                     <li>{{ rule.source }} &rarr; {{ rule.destination }}:{{ rule.port }} ({{ rule.category }})</li>
                     }
                 </ul>
                 }
-                @if(perm.type === 'Escort') {
+                @if(request.permission.type === 'Escort') {
                 <ul class="rules-list">
-                    @for(item of perm['items']; track item.ipAddress) {
+                    @for(item of request.permission['items']; track item.ipAddress) {
                     <li>{{ item.ipAddress }} - {{ item.macAddress }} (Valid: {{ item.requestPeriod }})</li>
                     }
                 </ul>
                 }
-                @if(perm.type === 'Proxy') {
-                <p><strong>Source IP:</strong> {{ perm['ipAddress'] }}</p>
-                <p><strong>Target:</strong> {{ perm['targetIp'] }}</p>
+                @if(request.permission.type === 'Proxy') {
+                <ul class="rules-list">
+                    @for(rule of request.permission['rules']; track rule.ipAddress) {
+                    <li>{{ rule.ipAddress }} &rarr; {{ rule.targetIp }}</li>
+                    }
+                </ul>
                 }
-                @if(perm.type === 'ProxyForAll') {
-                <p><strong>Source IP:</strong> {{ perm['ipAddress'] }}</p>
+                @if(request.permission.type === 'ProxyForAll') {
+                <p><strong>Source IP:</strong> {{ request.permission['ipAddress'] }}</p>
                 <p><strong>Access:</strong> Global Proxy for All Destinations</p>
                 }
-                @if(perm.type === 'SuperUser') {
-                <p><strong>Account:</strong> {{ perm['userAccount'] }}</p>
-                <p><strong>QuickBuild:</strong> {{ perm['quickBuild'] }}</p>
-                <p><strong>Access Type:</strong> {{ perm['accessType'] }}</p>
+                @if(request.permission.type === 'SuperUser') {
+                <p><strong>Account:</strong> {{ request.permission['userAccount'] }}</p>
+                <p><strong>QuickBuild:</strong> {{ request.permission['quickBuild'] }}</p>
+                <p><strong>Access Type:</strong> {{ request.permission['accessType'] }}</p>
                 }
-                @if(perm.type === 'RestApi') {
-                <p><strong>Account:</strong> {{ perm['user'] }}</p>
-                <p><strong>QuickBuild:</strong> {{ perm['quickBuild'] }}</p>
-                <p><strong>CMD:</strong> {{ perm['cmdAndFrequency'] }}</p>
+                @if(request.permission.type === 'RestApi') {
+                <p><strong>Account:</strong> {{ request.permission['user'] }}</p>
+                <p><strong>QuickBuild:</strong> {{ request.permission['quickBuild'] }}</p>
+                <p><strong>CMD:</strong> {{ request.permission['cmdAndFrequency'] }}</p>
                 }
             </div>
         </div>
-        }
     </div>
 
 </mat-dialog-content>
